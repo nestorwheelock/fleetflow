@@ -1,4 +1,4 @@
-# CarFlow
+# FleetFlow
 
 ### The Complete Car Rental Management System Built for Your Business
 
@@ -10,29 +10,29 @@ You didn't start a car rental business to spend your days juggling spreadsheets,
 
 **What if your entire operation ran itself?**
 
-CarFlow is a custom-built rental management system designed specifically for local car rental businesses like yours. No more generic software that doesn't fit. No more monthly subscription fees eating into your profits. One investment, and it's yours forever.
+FleetFlow is a custom-built rental management system designed specifically for local car rental businesses like yours. No more generic software that doesn't fit. No more monthly subscription fees eating into your profits. One investment, and it's yours forever.
 
 ---
 
-## The Problems CarFlow Solves
+## The Problems FleetFlow Solves
 
 ### Double-Bookings Cost You Customers
-Ever promised a car that was already rented? CarFlow's smart calendar **prevents conflicts automatically**. When a vehicle is booked, it's blocked—period. Your staff can't accidentally create overlapping reservations.
+Ever promised a car that was already rented? FleetFlow's smart calendar **prevents conflicts automatically**. When a vehicle is booked, it's blocked—period. Your staff can't accidentally create overlapping reservations.
 
 ### Paper Contracts Slow Everything Down
-Customers waiting while you hunt for forms. Contracts getting lost. No way to find that agreement from 6 months ago. CarFlow generates **professional PDF contracts instantly** and stores them forever. One click, done.
+Customers waiting while you hunt for forms. Contracts getting lost. No way to find that agreement from 6 months ago. FleetFlow generates **professional PDF contracts instantly** and stores them forever. One click, done.
 
 ### You Have No Idea What's Actually Happening
-Which vehicles make the most money? Which ones sit on the lot? What's your average rental length? Right now, you're guessing. CarFlow gives you a **real-time dashboard** showing today's pickups, returns, overdue vehicles, and fleet status at a glance.
+Which vehicles make the most money? Which ones sit on the lot? What's your average rental length? Right now, you're guessing. FleetFlow gives you a **real-time dashboard** showing today's pickups, returns, overdue vehicles, and fleet status at a glance.
 
 ### Check-Outs Take Forever
-Writing down mileage on paper. Taking photos on your phone. Hoping you remember where you saved them. CarFlow's **guided check-out workflow** walks your staff through every step: mileage, fuel level, condition report, photos, signature—all captured digitally and attached to the reservation.
+Writing down mileage on paper. Taking photos on your phone. Hoping you remember where you saved them. FleetFlow's **guided check-out workflow** walks your staff through every step: mileage, fuel level, condition report, photos, signature—all captured digitally and attached to the reservation.
 
 ### Customers Can't Book Online
-They have to call. You have to answer. Back and forth about dates and vehicles. Meanwhile, your competitor has a website where customers book in 2 minutes. CarFlow's **customer portal** lets them browse your fleet, check availability, and book 24/7—even while you sleep.
+They have to call. You have to answer. Back and forth about dates and vehicles. Meanwhile, your competitor has a website where customers book in 2 minutes. FleetFlow's **customer portal** lets them browse your fleet, check availability, and book 24/7—even while you sleep.
 
 ### You Can't Find That Customer's Info
-"Didn't they rent from us before? What was their license number?" CarFlow keeps a **complete customer database** with contact info, license details, documents, and full rental history. Search by name, email, or phone in seconds.
+"Didn't they rent from us before? What was their license number?" FleetFlow keeps a **complete customer database** with contact info, license details, documents, and full rental history. Search by name, email, or phone in seconds.
 
 ---
 
@@ -86,7 +86,7 @@ Meet customers where they are—on their phones:
 
 ## Why Custom Software Beats Off-the-Shelf
 
-| Generic Rental Software | CarFlow |
+| Generic Rental Software | FleetFlow |
 |------------------------|---------|
 | Monthly fees forever ($200-500/mo) | One-time investment, yours forever |
 | Built for enterprise, overkill for you | Built for 10-50 vehicle operations |
@@ -95,13 +95,13 @@ Meet customers where they are—on their phones:
 | Locked into their ecosystem | Integrates with what YOU choose |
 
 **Do the math**: Generic software at $300/month = $3,600/year = $18,000 over 5 years.
-CarFlow: **One investment starting at $800** for the complete foundation.
+FleetFlow: **One investment starting at $800** for the complete foundation.
 
 ---
 
 ## The Investment
 
-We build CarFlow in phases so you can start benefiting immediately:
+We build FleetFlow in phases so you can start benefiting immediately:
 
 | Phase | What You Get | Investment |
 |-------|--------------|------------|
@@ -142,7 +142,7 @@ Review the complete specifications:
 Phase 1 can be ready in 1-2 weeks. You'll have a working system fast.
 
 **Do I need special hardware?**
-No. CarFlow runs in any web browser. Your staff can use it on any computer, tablet, or phone.
+No. FleetFlow runs in any web browser. Your staff can use it on any computer, tablet, or phone.
 
 **What about my existing data?**
 We can import your current customer list, vehicle inventory, and reservation history.
@@ -179,7 +179,7 @@ Every day without a proper system is:
 
 ---
 
-*CarFlow — Because your car rental business deserves better than spreadsheets.*
+*FleetFlow — Because your car rental business deserves better than spreadsheets.*
 
 ---
 
@@ -212,7 +212,7 @@ Every day without a proper system is:
 ### Project Structure
 
 ```
-carflow/
+fleetflow/
 ├── config/                 # Django project settings
 │   ├── settings/
 │   │   ├── base.py
@@ -242,8 +242,8 @@ carflow/
 
 ```bash
 # Clone repository
-git clone https://github.com/nestorwheelock/carflow.git
-cd carflow
+git clone https://github.com/nestorwheelock/fleetflow.git
+cd fleetflow
 
 # Create virtual environment
 python -m venv venv
@@ -254,7 +254,7 @@ source venv/bin/activate  # Linux/Mac
 pip install -r requirements/development.txt
 
 # Setup database
-createdb carflow
+createdb fleetflow
 python manage.py migrate
 
 # Run development server
@@ -267,7 +267,7 @@ python manage.py runserver
 # .env file
 DEBUG=True
 SECRET_KEY=your-secret-key
-DATABASE_URL=postgres://user:pass@localhost/carflow
+DATABASE_URL=postgres://user:pass@localhost/fleetflow
 REDIS_URL=redis://localhost:6379/0
 
 # PayPal (Epoch 2)
@@ -277,7 +277,7 @@ PAYPAL_CLIENT_SECRET=your-secret
 # AWS S3 (Production)
 AWS_ACCESS_KEY_ID=your-key
 AWS_SECRET_ACCESS_KEY=your-secret
-AWS_STORAGE_BUCKET_NAME=carflow-files
+AWS_STORAGE_BUCKET_NAME=fleetflow-files
 ```
 
 ### Running Tests

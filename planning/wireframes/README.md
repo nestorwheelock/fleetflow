@@ -1,8 +1,8 @@
-# CarFlow Wireframes
+# FleetFlow Wireframes
 
 ## Overview
 
-This directory contains ASCII wireframes for all major screens in the CarFlow car rental management system. These wireframes serve as visual specifications for the user interface implementation.
+This directory contains ASCII wireframes for all major screens in the FleetFlow car rental management system. These wireframes serve as visual specifications for the user interface implementation.
 
 ## Design Patterns
 

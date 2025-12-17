@@ -42,5 +42,5 @@
 - FCM for both iOS and Android
 - Store device tokens in backend
 - Handle token refresh
-- Deep link format: carflow://rental/123
+- Deep link format: fleetflow://rental/123
 - Notification categories: Booking, Payment, Reminders

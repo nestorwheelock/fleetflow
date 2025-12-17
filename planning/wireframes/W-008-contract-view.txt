@@ -5,14 +5,14 @@ CONTRACT VIEW PAGE
 ------------------
 
 ╔══════════════════════════════════════════════════════════════════════════╗
-║  CARFLOW                                           [John ▼] [🔔]         ║
+║  FLEETFLOW                                           [John ▼] [🔔]         ║
 ╠══════════════════════════════════════════════════════════════════════════╣
 ║                                                                          ║
 ║  RENTAL CONTRACT                             [🖨 Print] [📄 Download PDF]║
 ║                                                                          ║
 ║  ┌──────────────────────────────────────────────────────────────────────┐║
 ║  │                                                                      │║
-║  │                    CARFLOW CAR RENTAL AGREEMENT                      │║
+║  │                    FLEETFLOW CAR RENTAL AGREEMENT                      │║
 ║  │                    ════════════════════════════                      │║
 ║  │                                                                      │║
 ║  │  Contract #: R-123                    Date: January 14, 2025         │║
@@ -81,7 +81,7 @@ PRINT VIEW (Simplified)
 
 ┌─────────────────────────────────────────────────────────────────────┐
 │                                                                     │
-│                    CARFLOW CAR RENTAL AGREEMENT                     │
+│                    FLEETFLOW CAR RENTAL AGREEMENT                     │
 │                    ═══════════════════════════                      │
 │                                                                     │
 │  Contract #: R-123                    Date: January 14, 2025        │

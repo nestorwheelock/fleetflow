@@ -1,8 +1,8 @@
-# CarFlow - Project Charter
+# FleetFlow - Project Charter
 
 ## Project Overview
 
-**Project Name**: CarFlow - Car Rental Management System
+**Project Name**: FleetFlow - Car Rental Management System
 **Version**: v1.0.0 (Epoch 1 MVP)
 **Start Date**: December 2024
 **Project Type**: Web Application + Mobile App
@@ -11,7 +11,7 @@
 
 ## Executive Summary
 
-CarFlow is a comprehensive car rental management system designed for small local rental businesses (10-50 vehicles, single location). The system provides end-to-end rental operations including fleet management, customer management, reservations, payments, contracts, maintenance tracking, and a customer self-service portal with mobile app support.
+FleetFlow is a comprehensive car rental management system designed for small local rental businesses (10-50 vehicles, single location). The system provides end-to-end rental operations including fleet management, customer management, reservations, payments, contracts, maintenance tracking, and a customer self-service portal with mobile app support.
 
 ---
 
@@ -214,7 +214,7 @@ CarFlow is a comprehensive car rental management system designed for small local
 
 ## Approval
 
-This Project Charter defines the scope, objectives, and approach for the CarFlow Car Rental Management System. By approving this document, stakeholders agree to the defined scope and commit to the project.
+This Project Charter defines the scope, objectives, and approach for the FleetFlow Car Rental Management System. By approving this document, stakeholders agree to the defined scope and commit to the project.
 
 | Role | Name | Signature | Date |
 |------|------|-----------|------|

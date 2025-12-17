@@ -150,7 +150,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 {% extends "base.html" %}
 {% load humanize %}
 
-{% block title %}Dashboard - CarFlow{% endblock %}
+{% block title %}Dashboard - FleetFlow{% endblock %}
 
 {% block content %}
 <div class="space-y-6">

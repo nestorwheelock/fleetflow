@@ -1,10 +1,10 @@
-# CarFlow - SPEC Summary
+# FleetFlow - SPEC Summary
 
 ## Quick Reference
 
 | Item | Value |
 |------|-------|
-| **Project Name** | CarFlow - Car Rental Management System |
+| **Project Name** | FleetFlow - Car Rental Management System |
 | **Technology** | Django 5.x + PostgreSQL + Tailwind CSS + HTMX |
 | **Business Type** | Small local rental (single location, 10-50 vehicles) |
 | **Payment Provider** | PayPal |

@@ -129,7 +129,7 @@ class ContractPDFGenerator:
 
         # Company name/logo
         elements.append(Paragraph(
-            "CARFLOW CAR RENTAL",
+            "FLEETFLOW CAR RENTAL",
             self.styles['ContractTitle']
         ))
         elements.append(Paragraph(
@@ -362,7 +362,7 @@ class ReceiptPDFGenerator:
         story = []
 
         # Header
-        story.append(Paragraph("CARFLOW CAR RENTAL", self.styles['Heading1']))
+        story.append(Paragraph("FLEETFLOW CAR RENTAL", self.styles['Heading1']))
         story.append(Paragraph("RENTAL RECEIPT", self.styles['Heading2']))
         story.append(Spacer(1, 20))
 
@@ -383,7 +383,7 @@ class ReceiptPDFGenerator:
 
         story.append(Paragraph(f"TOTAL PAID: ${self.reservation.total_amount:.2f}", self.styles['Heading2']))
         story.append(Spacer(1, 30))
-        story.append(Paragraph("Thank you for choosing CarFlow!", self.styles['Normal']))
+        story.append(Paragraph("Thank you for choosing FleetFlow!", self.styles['Normal']))
 
         doc.build(story)
         return buffer.getvalue()
