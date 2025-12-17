@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ contract.contract_number }} - FleetFlow{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-8">
+    <div>
+        <a href="/dashboard/contracts/" class="text-blue-600 hover:underline">&larr; Back to Contracts</a>
+        <h1 class="text-3xl font-bold text-gray-900 mt-2">{{ contract.contract_number }}</h1>
+    </div>
+    <a href="/dashboard/contracts/{{ contract.pk }}/pdf/"
+       class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+       target="_blank">
+        Download PDF
+    </a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Contract Details -->
+    <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold mb-4">Contract Details</h2>
+        <dl class="grid grid-cols-2 gap-4">
+            <div>
+                <dt class="text-sm text-gray-500">Customer</dt>
+                <dd class="font-medium">{{ contract.reservation.customer }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm text-gray-500">Vehicle</dt>
+                <dd class="font-medium">{{ contract.reservation.vehicle }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm text-gray-500">Rental Dates</dt>
+                <dd class="font-medium">{{ contract.reservation.start_date }} - {{ contract.reservation.end_date }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm text-gray-500">Total Amount</dt>
+                <dd class="font-medium text-green-600">${{ contract.reservation.total_amount }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm text-gray-500">Created</dt>
+                <dd class="font-medium">{{ contract.created_at }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm text-gray-500">Signed</dt>
+                <dd class="font-medium">{{ contract.customer_signed_at|default:"Not yet signed" }}</dd>
+            </div>
+        </dl>
+    </div>
+
+    <!-- Status -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold mb-4">Status</h2>
+        <div>
+            <span class="px-3 py-1 rounded text-sm font-medium
+                {% if contract.status == 'signed' %}bg-green-100 text-green-800
+                {% elif contract.status == 'pending_signature' %}bg-yellow-100 text-yellow-800
+                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                {{ contract.get_status_display }}
+            </span>
+        </div>
+    </div>
+</div>
+{% endblock %}

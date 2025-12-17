@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ customer }} - FleetFlow{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <a href="/dashboard/customers/" class="text-blue-600 hover:underline">&larr; Back to Customers</a>
+    <h1 class="text-3xl font-bold text-gray-900 mt-2">{{ customer.full_name }}</h1>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Customer Details -->
+    <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold mb-4">Customer Details</h2>
+        <dl class="grid grid-cols-2 gap-4">
+            <div>
+                <dt class="text-sm text-gray-500">Email</dt>
+                <dd class="font-medium">{{ customer.email }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm text-gray-500">Phone</dt>
+                <dd class="font-medium">{{ customer.phone }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm text-gray-500">Address</dt>
+                <dd class="font-medium">{{ customer.address|default:"N/A" }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm text-gray-500">Date of Birth</dt>
+                <dd class="font-medium">{{ customer.date_of_birth|default:"N/A" }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm text-gray-500">License Number</dt>
+                <dd class="font-medium">{{ customer.license_number|default:"N/A" }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm text-gray-500">License Expiry</dt>
+                <dd class="font-medium">{{ customer.license_expiry|default:"N/A" }}</dd>
+            </div>
+        </dl>
+    </div>
+
+    <!-- Status -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold mb-4">Status</h2>
+        <div class="space-y-4">
+            <div>
+                {% if customer.is_blacklisted %}
+                <span class="px-3 py-1 rounded text-sm font-medium bg-red-100 text-red-800">Blacklisted</span>
+                <p class="mt-2 text-sm text-gray-500">{{ customer.blacklist_reason }}</p>
+                {% else %}
+                <span class="px-3 py-1 rounded text-sm font-medium bg-green-100 text-green-800">Active</span>
+                {% endif %}
+            </div>
+            <div>
+                <span class="text-sm text-gray-500">Total Rentals</span>
+                <div class="text-2xl font-bold">{{ customer.total_rentals }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

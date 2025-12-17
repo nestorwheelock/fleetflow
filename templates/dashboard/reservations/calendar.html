@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Reservation Calendar - FleetFlow{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <a href="/dashboard/reservations/" class="text-blue-600 hover:underline">&larr; Back to Reservations</a>
+    <h1 class="text-3xl font-bold text-gray-900 mt-2">Reservation Calendar</h1>
+</div>
+
+<div class="bg-white rounded-lg shadow p-6">
+    <div id="calendar" class="min-h-96">
+        <p class="text-gray-500">Calendar view requires FullCalendar JS library.</p>
+        <p class="text-gray-500 mt-2">API endpoint: /api/reservations/calendar/</p>
+    </div>
+</div>
+{% endblock %}

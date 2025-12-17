@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Check-in - FleetFlow{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <a href="/dashboard/reservations/{{ reservation.pk }}/" class="text-blue-600 hover:underline">&larr; Back to Reservation</a>
+    <h1 class="text-3xl font-bold text-gray-900 mt-2">Check-in: {{ reservation.customer }}</h1>
+</div>
+
+{% if error %}
+<div class="bg-red-100 text-red-700 p-4 rounded mb-6">{{ error }}</div>
+{% endif %}
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Reservation Summary -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold mb-4">Reservation Summary</h2>
+        <dl class="space-y-2">
+            <div class="flex justify-between">
+                <dt class="text-gray-500">Customer</dt>
+                <dd class="font-medium">{{ reservation.customer }}</dd>
+            </div>
+            <div class="flex justify-between">
+                <dt class="text-gray-500">Vehicle</dt>
+                <dd class="font-medium">{{ reservation.vehicle }}</dd>
+            </div>
+            <div class="flex justify-between">
+                <dt class="text-gray-500">Checkout Mileage</dt>
+                <dd class="font-medium">{{ reservation.checkout_mileage|default:"N/A" }}</dd>
+            </div>
+            <div class="flex justify-between">
+                <dt class="text-gray-500">Total</dt>
+                <dd class="font-medium text-green-600">${{ reservation.total_amount }}</dd>
+            </div>
+        </dl>
+    </div>
+
+    <!-- Check-in Form -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold mb-4">Check-in Details</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Return Mileage</label>
+                    <input type="number" name="mileage"
+                           class="w-full border rounded px-4 py-2" required>
+                </div>
+            </div>
+            <div class="mt-6">
+                <button type="submit" class="w-full bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700 font-medium">
+                    Complete Check-in
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

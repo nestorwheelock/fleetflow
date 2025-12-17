@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FleetFlow{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-100 min-h-screen">
+    {% if tenant %}
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-8">
+                    <a href="/dashboard/" class="text-xl font-bold">FleetFlow</a>
+                    <div class="hidden md:flex space-x-4">
+                        <a href="/dashboard/" class="hover:bg-blue-700 px-3 py-2 rounded">Dashboard</a>
+                        <a href="/dashboard/vehicles/" class="hover:bg-blue-700 px-3 py-2 rounded">Vehicles</a>
+                        <a href="/dashboard/customers/" class="hover:bg-blue-700 px-3 py-2 rounded">Customers</a>
+                        <a href="/dashboard/reservations/" class="hover:bg-blue-700 px-3 py-2 rounded">Reservations</a>
+                        <a href="/dashboard/contracts/" class="hover:bg-blue-700 px-3 py-2 rounded">Contracts</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm">{{ tenant.business_name }}</span>
+                    <a href="/admin/" class="hover:bg-blue-700 px-3 py-2 rounded text-sm">Admin</a>
+                    <a href="/logout/" class="hover:bg-blue-700 px-3 py-2 rounded text-sm">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="p-4 rounded {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-gray-800 text-white py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-sm">
+            FleetFlow - Car Rental Management
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
