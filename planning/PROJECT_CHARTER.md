@@ -2,229 +2,350 @@
 
 ## Project Overview
 
-**Project Name**: FleetFlow - Car Rental Management System
-**Version**: v1.0.0 (Epoch 1 MVP)
-**Start Date**: December 2024
-**Project Type**: Web Application + Mobile App
+**Project Name**: FleetFlow - Car Rental Management SaaS
+**Version**: 1.0.0
+**Business Model**: Software as a Service (SaaS)
+**Target Market**: Small to medium car rental businesses (10-50 vehicles)
 
 ---
 
 ## Executive Summary
 
-FleetFlow is a comprehensive car rental management system designed for small local rental businesses (10-50 vehicles, single location). The system provides end-to-end rental operations including fleet management, customer management, reservations, payments, contracts, maintenance tracking, and a customer self-service portal with mobile app support.
+FleetFlow is a multi-tenant SaaS platform for car rental management, designed specifically for local and regional rental businesses. The platform provides end-to-end rental operations including fleet management, reservations, online booking, payments, contracts, maintenance tracking, and GPS fleet tracking.
+
+**Business Model**: Monthly subscription ($99-499/month based on fleet size and features)
 
 ---
 
 ## Business Objectives
 
 ### Primary Goals
-1. **Streamline Operations** - Replace manual/paper-based processes with digital workflows
-2. **Enable Self-Service** - Allow customers to browse, book, and pay online
-3. **Improve Fleet Utilization** - Track vehicle availability and maintenance efficiently
-4. **Reduce Errors** - Prevent double-bookings and missed maintenance
-5. **Enhance Customer Experience** - Mobile app with real-time vehicle tracking
+1. **Build recurring revenue** — Monthly subscriptions from rental businesses
+2. **Capture underserved market** — Small rentals ignored by enterprise vendors
+3. **Reduce customer acquisition cost** — Self-service signups, free trial
+4. **Achieve profitability** — 100+ paying customers within 12 months
+5. **Create sellable asset** — Build toward acquisition at 3-5x ARR
 
 ### Success Metrics
-- 80% reduction in manual paperwork
-- 50% of bookings completed online (self-service)
-- 95% fleet utilization visibility
-- Zero double-bookings
-- Customer satisfaction score > 4.5/5
+
+| Metric | Year 1 Target | Year 2 Target |
+|--------|---------------|---------------|
+| Paying Customers | 50 | 150 |
+| Monthly Recurring Revenue (MRR) | $10,000 | $35,000 |
+| Annual Recurring Revenue (ARR) | $120,000 | $420,000 |
+| Churn Rate | <5%/month | <3%/month |
+| Customer Acquisition Cost | <$200 | <$150 |
+| Lifetime Value (LTV) | >$2,000 | >$3,000 |
+
+---
+
+## Revenue Model
+
+### Subscription Tiers
+
+| Plan | Vehicles | Monthly Price | Annual Price | Features |
+|------|----------|---------------|--------------|----------|
+| **Starter** | 1-10 | $99 | $990 (17% off) | Core features, 1 user |
+| **Professional** | 11-25 | $199 | $1,990 (17% off) | + Online booking, 3 users |
+| **Business** | 26-50 | $349 | $3,490 (17% off) | + GPS, analytics, 10 users |
+| **Enterprise** | 50+ | Custom | Custom | Unlimited, dedicated support |
+
+### Revenue Projections
+
+| Scenario | Customers | Avg MRR | Monthly Revenue | Annual Revenue |
+|----------|-----------|---------|-----------------|----------------|
+| Conservative | 50 | $175 | $8,750 | $105,000 |
+| Target | 100 | $200 | $20,000 | $240,000 |
+| Optimistic | 200 | $225 | $45,000 | $540,000 |
+
+### Unit Economics
+
+| Metric | Value |
+|--------|-------|
+| Average Revenue Per User (ARPU) | $200/month |
+| Customer Acquisition Cost (CAC) | $150 |
+| Lifetime Value (LTV) | $2,400 (12-month avg retention) |
+| LTV:CAC Ratio | 16:1 |
+| Gross Margin | 80% |
+| Payback Period | <1 month |
 
 ---
 
 ## Scope
 
-### In Scope (4 Epochs)
+### Platform Features (5 Epochs)
 
-**Epoch 1: Core Rental Operations (MVP)**
-- Vehicle fleet management (CRUD, photos, rates)
-- Customer management (profiles, documents, history)
+**Epoch 1: Core Operations (MVP)**
+- Multi-tenant architecture
+- Tenant onboarding and setup
+- Vehicle fleet management
+- Customer database
 - Reservation calendar with conflict prevention
-- Check-out/check-in workflows with condition reports
+- Check-out/check-in workflows
 - PDF contract generation
 - Staff dashboard
 
-**Epoch 2: Self-Service Portal & Payments**
-- Customer registration and authentication
-- Online vehicle browsing and booking
-- PayPal payment integration
-- Electronic contract signing (e-signatures)
-- Email notifications and reminders
+**Epoch 2: Online Booking & Payments**
+- Customer self-service portal
+- Online vehicle browsing
+- Self-service booking
+- PayPal payment processing (for rentals)
+- E-signature contracts
+- Email notifications
+- Stripe subscription billing (for SaaS)
 
-**Epoch 3: Advanced Features & Integrations**
-- Maintenance scheduling and tracking
-- GPS/telematics fleet tracking
-- Driver license verification API
-- Insurance verification
-- Business analytics and reports
-- PWA support
+**Epoch 3: Advanced Features**
+- Maintenance scheduling
+- GPS/telematics integration
+- License verification API
+- Analytics dashboard
+- Usage tracking and limits
 
-**Epoch 4: Mobile App with Driver Tracking**
-- React Native mobile app (iOS/Android)
-- Biometric authentication
-- Real-time vehicle GPS tracking
-- Trip sharing for safety
+**Epoch 4: Mobile App**
+- React Native mobile app
+- Real-time vehicle tracking
+- Trip sharing
 - Push notifications
-- Offline mode with sync
-- Digital documents and QR check-in
+- Offline mode
 
-### Out of Scope (Future Versions)
-- Multi-location support
+**Epoch 5: Platform & Growth** *(Future)*
+- Admin super-dashboard (manage all tenants)
+- White-label options
+- Public API
+- Marketplace for add-ons
+- Affiliate/referral system
+
+### Out of Scope (Future)
+- Multi-location per tenant
 - Franchise management
 - Vehicle auction/sales module
 - Full accounting/ERP integration
-- International currency support
 - Digital key/keyless entry
-- AI-powered pricing optimization
 
 ---
 
 ## Technical Architecture
+
+### Multi-Tenant Design
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    FLEETFLOW SAAS ARCHITECTURE                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐          │
+│   │Tenant A │  │Tenant B │  │Tenant C │  │Tenant N │          │
+│   │(Rental  │  │(Rental  │  │(Rental  │  │  ...    │          │
+│   │ Co. 1)  │  │ Co. 2)  │  │ Co. 3)  │  │         │          │
+│   └────┬────┘  └────┬────┘  └────┬────┘  └────┬────┘          │
+│        │            │            │            │                │
+│        └────────────┼────────────┼────────────┘                │
+│                     │            │                             │
+│              ┌──────▼────────────▼──────┐                      │
+│              │     FLEETFLOW PLATFORM    │                      │
+│              │    (Shared Application)   │                      │
+│              └──────────────┬───────────┘                      │
+│                             │                                   │
+│    ┌────────────────────────┼────────────────────────┐         │
+│    │                        │                        │         │
+│  ┌─▼───────┐         ┌──────▼──────┐          ┌─────▼─────┐   │
+│  │ Tenant  │         │   Shared    │          │  Billing  │   │
+│  │ Data    │         │  Services   │          │  Service  │   │
+│  │(Isolated)│         │             │          │ (Stripe)  │   │
+│  └─────────┘         └─────────────┘          └───────────┘   │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                    INFRASTRUCTURE                        │   │
+│  │  PostgreSQL │ Redis │ S3 │ Celery │ AWS                 │   │
+│  └─────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Tenant Isolation Strategy
+
+| Component | Isolation Method |
+|-----------|------------------|
+| Database | Shared database, tenant_id on all tables |
+| File Storage | Separate S3 prefixes per tenant |
+| Subdomains | tenant-name.fleetflow.io |
+| API | Tenant identified via JWT token |
+| Caching | Redis key prefixes per tenant |
 
 ### Technology Stack
 
 | Layer | Technology |
 |-------|------------|
 | Backend | Django 5.x, Python 3.12+ |
-| Database | PostgreSQL 15 |
-| Task Queue | Celery + Redis |
+| Database | PostgreSQL 15 (multi-tenant) |
+| Cache | Redis |
+| Task Queue | Celery |
 | API | Django REST Framework |
-| Real-time | Django Channels (WebSocket) |
-| Frontend (Web) | Django Templates, Tailwind CSS, HTMX, Alpine.js |
-| Frontend (Mobile) | React Native, Expo |
-| Payments | PayPal SDK |
-| Maps | MapBox / Google Maps |
-| Push Notifications | Firebase Cloud Messaging |
-| File Storage | AWS S3 (production) / Local (dev) |
-| PDF Generation | ReportLab |
+| Frontend | Django Templates, Tailwind CSS, HTMX, Alpine.js |
+| Mobile | React Native, Expo |
+| SaaS Billing | Stripe (subscriptions) |
+| Rental Payments | PayPal |
+| Hosting | AWS (ECS, RDS, S3, CloudFront) |
+| Monitoring | Sentry, CloudWatch |
+| Email | SendGrid / AWS SES |
 
-### System Components
+---
 
+## Data Model (Multi-Tenant)
+
+### Core Tenant Model
+
+```python
+class Tenant(models.Model):
+    # Identity
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True)  # subdomain
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    # Subscription (Stripe)
+    plan = models.CharField(choices=PLAN_CHOICES)
+    stripe_customer_id = models.CharField()
+    stripe_subscription_id = models.CharField()
+    subscription_status = models.CharField()  # active, past_due, canceled
+
+    # Plan Limits
+    vehicle_limit = models.IntegerField()
+    user_limit = models.IntegerField()
+    features = models.JSONField()  # enabled features
+
+    # Business Info
+    business_name = models.CharField()
+    business_address = models.TextField()
+    business_phone = models.CharField()
+    business_email = models.EmailField()
+    logo = models.ImageField()
+    timezone = models.CharField()
+    currency = models.CharField(default='USD')
+
+    # Status
+    is_active = models.BooleanField(default=True)
+    trial_ends_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
 ```
-                    ┌─────────────────┐
-                    │   Load Balancer │
-                    └────────┬────────┘
-                             │
-        ┌────────────────────┼────────────────────┐
-        │                    │                    │
-   ┌────▼────┐         ┌─────▼─────┐        ┌────▼────┐
-   │  Web    │         │   API     │        │ Mobile  │
-   │ Portal  │         │  Server   │        │   App   │
-   └────┬────┘         └─────┬─────┘        └────┬────┘
-        │                    │                    │
-        └────────────────────┼────────────────────┘
-                             │
-                    ┌────────▼────────┐
-                    │  Django Core    │
-                    │  Application    │
-                    └────────┬────────┘
-                             │
-        ┌────────────────────┼────────────────────┐
-        │                    │                    │
-   ┌────▼────┐         ┌─────▼─────┐        ┌────▼────┐
-   │PostgreSQL│         │   Redis   │        │   S3    │
-   │ Database │         │   Cache   │        │ Storage │
-   └──────────┘         └───────────┘        └─────────┘
+
+### Tenant-Scoped Models
+
+All business models include tenant foreign key:
+
+```python
+class TenantModel(models.Model):
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE)
+
+    class Meta:
+        abstract = True
+
+class Vehicle(TenantModel):
+    # ... vehicle fields
+
+class Customer(TenantModel):
+    # ... customer fields
+
+class Reservation(TenantModel):
+    # ... reservation fields
 ```
 
 ---
 
-## Stakeholders
+## Feature Access by Plan
 
-| Role | Responsibility |
-|------|----------------|
-| Business Owner | Requirements, approval, funding |
-| Developer | Design, implementation, testing |
-| End Users (Staff) | Daily rental operations |
-| End Users (Customers) | Self-service booking and management |
+| Feature | Starter | Professional | Business | Enterprise |
+|---------|---------|--------------|----------|------------|
+| **Price** | $99/mo | $199/mo | $349/mo | Custom |
+| **Vehicles** | 10 | 25 | 50 | Unlimited |
+| **Users** | 1 | 3 | 10 | Unlimited |
+| **Reservations** | Unlimited | Unlimited | Unlimited | Unlimited |
+| **Customers** | Unlimited | Unlimited | Unlimited | Unlimited |
+| **Online Booking** | ❌ | ✅ | ✅ | ✅ |
+| **PayPal Payments** | ❌ | ✅ | ✅ | ✅ |
+| **E-Signatures** | ❌ | ✅ | ✅ | ✅ |
+| **GPS Tracking** | ❌ | ❌ | ✅ | ✅ |
+| **Analytics** | Basic | Standard | Advanced | Custom |
+| **API Access** | ❌ | ❌ | ✅ | ✅ |
+| **Support** | Email | Priority | Phone | Dedicated |
+| **Custom Domain** | ❌ | ❌ | ✅ | ✅ |
+| **White Label** | ❌ | ❌ | ❌ | ✅ |
 
 ---
 
-## Risks and Mitigations
+## Go-To-Market Strategy
+
+### Target Customer Profile
+- Small car rental businesses (10-50 vehicles)
+- Currently using spreadsheets or outdated software
+- US-based (initial market)
+- Revenue: $100K - $2M/year
+- Pain: Manual processes, no online booking, double-bookings
+
+### Acquisition Channels
+1. **SEO/Content** — "car rental software", "fleet management small business"
+2. **Google Ads** — Target rental business keywords
+3. **Industry Forums** — Car rental association communities
+4. **Direct Outreach** — LinkedIn, cold email
+5. **Referral Program** — 1 month free per referral
+
+### Conversion Funnel
+```
+Landing Page → Free Trial (14 days) → Onboarding → Paid Subscription
+     ↓              ↓                    ↓              ↓
+   100%            20%                  60%            70%
+              (of visitors)      (of trial starts) (of onboarded)
+```
+
+---
+
+## Risks & Mitigations
 
 | Risk | Impact | Probability | Mitigation |
 |------|--------|-------------|------------|
-| PayPal API changes | High | Low | Abstract payment layer, monitor API updates |
-| GPS hardware compatibility | Medium | Medium | Support multiple providers, graceful fallback |
-| Mobile app store rejection | Medium | Low | Follow guidelines, beta testing |
-| Data loss | High | Low | Automated backups, redundant storage |
-| Security breach | High | Low | OWASP compliance, security audits, encryption |
+| Low initial adoption | High | Medium | Free trial, content marketing |
+| High churn | High | Medium | Onboarding support, feature stickiness |
+| Competition | Medium | Low | Focus on SMB, better UX, lower price |
+| Scaling issues | Medium | Low | Cloud-native architecture |
+| Security breach | High | Low | SOC 2 compliance, encryption |
+| Payment failures | Medium | Medium | Dunning emails, grace period |
 
 ---
 
-## Assumptions
+## Development Roadmap
 
-1. Business operates single location (multi-location out of scope)
-2. Fleet size 10-50 vehicles (scalable architecture for growth)
-3. Staff has basic computer literacy
-4. Customers have smartphones for mobile app
-5. Reliable internet connectivity at rental location
-6. GPS hardware will be installed in vehicles (Epoch 3)
-
----
-
-## Constraints
-
-1. **Budget**: AI-assisted development model with fixed pricing per epoch
-2. **Timeline**: Sequential epoch delivery
-3. **Technology**: Django/Python backend (per client preference)
-4. **Payments**: PayPal only (per client preference)
-5. **Mobile**: Cross-platform (React Native) vs native
+| Epoch | Focus | Duration | Key Deliverables |
+|-------|-------|----------|------------------|
+| 1 | MVP | 4 weeks | Multi-tenant core, fleet, reservations |
+| 2 | Monetization | 4 weeks | Online booking, payments, Stripe billing |
+| 3 | Stickiness | 4 weeks | GPS, maintenance, analytics |
+| 4 | Mobile | 4 weeks | iOS/Android app |
+| 5 | Scale | Ongoing | Admin tools, API, white-label |
 
 ---
 
-## Acceptance Criteria
+## Success Criteria
 
-### Epoch 1 (MVP) Acceptance
-- [ ] Staff can add/edit/view vehicles with photos and rates
-- [ ] Staff can add/edit/view customers with license info
-- [ ] Staff can create reservations on calendar
-- [ ] System prevents double-booking same vehicle
-- [ ] Staff can process check-out with condition report
-- [ ] Staff can process check-in with final charges
-- [ ] System generates PDF rental contracts
-- [ ] Dashboard shows daily pickups/returns
-- [ ] All features have >95% test coverage
+### MVP Launch (Epoch 1-2)
+- [ ] Multi-tenant architecture working
+- [ ] 10 beta customers onboarded
+- [ ] Stripe billing integrated
+- [ ] 99% uptime achieved
 
-### Epoch 2 Acceptance
-- [ ] Customers can register and login
-- [ ] Customers can browse available vehicles
-- [ ] Customers can complete online booking
-- [ ] PayPal payment processing works
-- [ ] Customers can e-sign contracts
-- [ ] Email notifications sent for bookings
+### Product-Market Fit (Month 6)
+- [ ] 50 paying customers
+- [ ] <5% monthly churn
+- [ ] LTV > 3x CAC
+- [ ] NPS score > 40
 
-### Epoch 3 Acceptance
-- [ ] Maintenance scheduling and alerts work
-- [ ] GPS tracking displays on map
-- [ ] License verification API integrated
-- [ ] Analytics dashboard shows key metrics
-- [ ] Reports exportable to CSV/PDF
-
-### Epoch 4 Acceptance
-- [ ] Mobile app published to app stores
-- [ ] Biometric login works
-- [ ] Real-time vehicle location updates
-- [ ] Trip sharing generates working links
-- [ ] Push notifications delivered
-- [ ] Offline mode caches rental data
-
----
-
-## Approval
-
-This Project Charter defines the scope, objectives, and approach for the FleetFlow Car Rental Management System. By approving this document, stakeholders agree to the defined scope and commit to the project.
-
-| Role | Name | Signature | Date |
-|------|------|-----------|------|
-| Business Owner | | | |
-| Developer | | | |
+### Growth Phase (Month 12)
+- [ ] 100+ paying customers
+- [ ] $20,000+ MRR
+- [ ] Mobile app launched
+- [ ] Operating profitability
 
 ---
 
 ## Document History
 
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0 | Dec 2024 | Developer | Initial charter |
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | Dec 2025 | Initial SaaS charter |
