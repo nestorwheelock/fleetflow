@@ -19,7 +19,7 @@ Tienes un negocio de alquiler de vehículos con 10-50 unidades. Necesitas softwa
 - Se ajuste a tu presupuesto
 
 **Pero tus opciones son:**
-- Software empresarial a $500-1,000/mes (excesivo)
+- Software empresarial a $8,500-17,000 MXN/mes (excesivo)
 - Hojas de cálculo y notas adhesivas (caos)
 - Herramientas genéricas de reservas (no diseñadas para alquileres)
 
@@ -68,9 +68,9 @@ Precios simples y transparentes. Sin cargos ocultos. Sin contratos.
 
 | Plan | Vehículos | Precio | Características |
 |------|-----------|--------|-----------------|
-| **Inicial** | 1-10 | **$99/mes** | Características principales, 1 usuario, soporte por email |
-| **Profesional** | 11-25 | **$199/mes** | + Reservas en línea, 3 usuarios, soporte prioritario |
-| **Empresarial** | 26-50 | **$349/mes** | + Rastreo GPS, análisis, 10 usuarios |
+| **Inicial** | 1-10 | **$1,699 MXN/mes** | Características principales, 1 usuario, soporte por email |
+| **Profesional** | 11-25 | **$3,399 MXN/mes** | + Reservas en línea, 3 usuarios, soporte prioritario |
+| **Empresarial** | 26-50 | **$5,999 MXN/mes** | + Rastreo GPS, análisis, 10 usuarios |
 | **Corporativo** | 50+ | **Personalizado** | Todo ilimitado, soporte dedicado, integraciones personalizadas |
 
 **Todos los planes incluyen:**
@@ -91,7 +91,7 @@ Precios simples y transparentes. Sin cargos ocultos. Sin contratos.
 ### vs. Software Empresarial (TSD, Rent Centric, etc.)
 | Ellos Cobran | Nosotros Cobramos |
 |--------------|-------------------|
-| $500-1,000/mes | $99-349/mes |
+| $8,500-17,000 MXN/mes | $1,699-5,999 MXN/mes |
 | Cuotas de instalación | Sin cuotas de instalación |
 | Contratos anuales | Mes a mes |
 | Requiere capacitación | Interfaz intuitiva |

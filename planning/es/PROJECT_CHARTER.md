@@ -13,7 +13,7 @@
 
 FleetFlow es una plataforma SaaS multi-inquilino para gestión de alquiler de vehículos, diseñada específicamente para negocios de alquiler locales y regionales. La plataforma proporciona operaciones de alquiler de extremo a extremo incluyendo gestión de flota, reservaciones, reservas en línea, pagos, contratos, seguimiento de mantenimiento y rastreo GPS de flota.
 
-**Modelo de Negocio**: Suscripción mensual ($99-499/mes según tamaño de flota y características)
+**Modelo de Negocio**: Suscripción mensual ($1,699-8,499 MXN/mes según tamaño de flota y características)
 
 ---
 
@@ -31,11 +31,11 @@ FleetFlow es una plataforma SaaS multi-inquilino para gestión de alquiler de ve
 | Métrica | Meta Año 1 | Meta Año 2 |
 |---------|------------|------------|
 | Clientes Pagando | 50 | 150 |
-| Ingresos Mensuales Recurrentes (MRR) | $10,000 | $35,000 |
-| Ingresos Anuales Recurrentes (ARR) | $120,000 | $420,000 |
+| Ingresos Mensuales Recurrentes (MRR) | $170,000 MXN | $595,000 MXN |
+| Ingresos Anuales Recurrentes (ARR) | $2,040,000 MXN | $7,140,000 MXN |
 | Tasa de Abandono | <5%/mes | <3%/mes |
-| Costo de Adquisición de Cliente | <$200 | <$150 |
-| Valor de Vida del Cliente (LTV) | >$2,000 | >$3,000 |
+| Costo de Adquisición de Cliente | <$3,400 MXN | <$2,550 MXN |
+| Valor de Vida del Cliente (LTV) | >$34,000 MXN | >$51,000 MXN |
 
 ---
 
@@ -45,26 +45,26 @@ FleetFlow es una plataforma SaaS multi-inquilino para gestión de alquiler de ve
 
 | Plan | Vehículos | Precio Mensual | Precio Anual | Características |
 |------|-----------|----------------|--------------|-----------------|
-| **Inicial** | 1-10 | $99 | $990 (17% desc.) | Características principales, 1 usuario |
-| **Profesional** | 11-25 | $199 | $1,990 (17% desc.) | + Reservas en línea, 3 usuarios |
-| **Empresarial** | 26-50 | $349 | $3,490 (17% desc.) | + GPS, análisis, 10 usuarios |
+| **Inicial** | 1-10 | $1,699 MXN | $16,900 MXN (17% desc.) | Características principales, 1 usuario |
+| **Profesional** | 11-25 | $3,399 MXN | $33,900 MXN (17% desc.) | + Reservas en línea, 3 usuarios |
+| **Empresarial** | 26-50 | $5,999 MXN | $59,900 MXN (17% desc.) | + GPS, análisis, 10 usuarios |
 | **Corporativo** | 50+ | Personalizado | Personalizado | Ilimitado, soporte dedicado |
 
 ### Proyecciones de Ingresos
 
 | Escenario | Clientes | MRR Promedio | Ingresos Mensuales | Ingresos Anuales |
 |-----------|----------|--------------|-------------------|------------------|
-| Conservador | 50 | $175 | $8,750 | $105,000 |
-| Objetivo | 100 | $200 | $20,000 | $240,000 |
-| Optimista | 200 | $225 | $45,000 | $540,000 |
+| Conservador | 50 | $2,975 MXN | $148,750 MXN | $1,785,000 MXN |
+| Objetivo | 100 | $3,400 MXN | $340,000 MXN | $4,080,000 MXN |
+| Optimista | 200 | $3,825 MXN | $765,000 MXN | $9,180,000 MXN |
 
 ### Economía Unitaria
 
 | Métrica | Valor |
 |---------|-------|
-| Ingreso Promedio Por Usuario (ARPU) | $200/mes |
-| Costo de Adquisición de Cliente (CAC) | $150 |
-| Valor de Vida del Cliente (LTV) | $2,400 (12 meses retención promedio) |
+| Ingreso Promedio Por Usuario (ARPU) | $3,400 MXN/mes |
+| Costo de Adquisición de Cliente (CAC) | $2,550 MXN |
+| Valor de Vida del Cliente (LTV) | $40,800 MXN (12 meses retención promedio) |
 | Ratio LTV:CAC | 16:1 |
 | Margen Bruto | 80% |
 | Período de Recuperación | <1 mes |
@@ -220,7 +220,7 @@ class Tenant(models.Model):
     business_email = models.EmailField()
     logo = models.ImageField()
     timezone = models.CharField()
-    currency = models.CharField(default='USD')
+    currency = models.CharField(default='MXN')
 
     # Estado
     is_active = models.BooleanField(default=True)
@@ -255,7 +255,7 @@ class Reservation(TenantModel):
 
 | Característica | Inicial | Profesional | Empresarial | Corporativo |
 |----------------|---------|-------------|-------------|-------------|
-| **Precio** | $99/mes | $199/mes | $349/mes | Personalizado |
+| **Precio** | $1,699 MXN/mes | $3,399 MXN/mes | $5,999 MXN/mes | Personalizado |
 | **Vehículos** | 10 | 25 | 50 | Ilimitado |
 | **Usuarios** | 1 | 3 | 10 | Ilimitado |
 | **Reservaciones** | Ilimitadas | Ilimitadas | Ilimitadas | Ilimitadas |
@@ -277,8 +277,8 @@ class Reservation(TenantModel):
 ### Perfil del Cliente Objetivo
 - Negocios pequeños de alquiler de vehículos (10-50 unidades)
 - Actualmente usando hojas de cálculo o software obsoleto
-- Basados en EE.UU. (mercado inicial)
-- Ingresos: $100K - $2M/año
+- Basados en México y Latinoamérica (mercado inicial)
+- Ingresos: $1.7M - $34M MXN/año
 - Problema: Procesos manuales, sin reservas en línea, dobles reservaciones
 
 ### Canales de Adquisición
@@ -339,7 +339,7 @@ Página de Destino → Prueba Gratis (14 días) → Onboarding → Suscripción 
 
 ### Fase de Crecimiento (Mes 12)
 - [ ] 100+ clientes pagando
-- [ ] $20,000+ MRR
+- [ ] $340,000+ MXN MRR
 - [ ] App móvil lanzada
 - [ ] Rentabilidad operativa
 

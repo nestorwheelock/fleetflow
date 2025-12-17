@@ -8,7 +8,7 @@
 | **Modelo de Negocio** | Software como Servicio (Suscripción Mensual) |
 | **Tecnología** | Django 5.x + PostgreSQL + Tailwind CSS + HTMX |
 | **Mercado Objetivo** | Pequeños alquileres de autos (10-50 vehículos) |
-| **Precios** | $99 - $349/mes (4 niveles) |
+| **Precios** | $1,699 - $5,999 MXN/mes (4 niveles) |
 | **Épocas** | 5 (Principal, Reservas, Avanzado, Móvil, Plataforma) |
 | **Historias de Usuario** | 34 total (S-001 a S-034) |
 | **Tareas (Época 1)** | 28 tareas |
@@ -20,9 +20,9 @@
 
 | Plan | Vehículos | Precio | Características Clave |
 |------|-----------|--------|----------------------|
-| **Inicial** | 1-10 | $99/mes | Características principales, 1 usuario |
-| **Profesional** | 11-25 | $199/mes | + Reservas en línea, 3 usuarios |
-| **Empresarial** | 26-50 | $349/mes | + GPS, análisis, 10 usuarios |
+| **Inicial** | 1-10 | $1,699 MXN/mes | Características principales, 1 usuario |
+| **Profesional** | 11-25 | $3,399 MXN/mes | + Reservas en línea, 3 usuarios |
+| **Empresarial** | 26-50 | $5,999 MXN/mes | + GPS, análisis, 10 usuarios |
 | **Corporativo** | 50+ | Personalizado | Ilimitado, soporte dedicado |
 
 ---
@@ -181,8 +181,8 @@
 | Métrica | Año 1 | Año 2 |
 |---------|-------|-------|
 | Clientes | 50 | 150 |
-| MRR | $10,000 | $35,000 |
-| ARR | $120,000 | $420,000 |
+| MRR | $170,000 MXN | $595,000 MXN |
+| ARR | $2,040,000 MXN | $7,140,000 MXN |
 | Abandono | <5%/mes | <3%/mes |
 
 ---
