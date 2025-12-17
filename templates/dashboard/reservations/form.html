@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if object %}Edit{% else %}New{% endif %} Reservation - FleetFlow{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <a href="/dashboard/reservations/" class="text-blue-600 hover:underline">&larr; Back to Reservations</a>
+    <h1 class="text-3xl font-bold text-gray-900 mt-2">{% if object %}Edit Reservation{% else %}New Reservation{% endif %}</h1>
+</div>
+
+<div class="bg-white rounded-lg shadow p-6 max-w-2xl">
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+
+        {% if form.errors %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <p class="font-bold">Please correct the errors below:</p>
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        <div class="space-y-6">
+            <div>
+                <label for="id_vehicle" class="block text-sm font-medium text-gray-700 mb-1">Vehicle *</label>
+                <select name="vehicle" id="id_vehicle" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Select a vehicle...</option>
+                    {% for vehicle in form.vehicle.field.queryset %}
+                    <option value="{{ vehicle.pk }}" {% if form.vehicle.value|stringformat:"i" == vehicle.pk|stringformat:"i" %}selected{% endif %}>
+                        {{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }} ({{ vehicle.license_plate }}) - ${{ vehicle.daily_rate }}/day
+                    </option>
+                    {% endfor %}
+                </select>
+                {% if form.vehicle.errors %}<p class="text-red-600 text-sm mt-1">{{ form.vehicle.errors.0 }}</p>{% endif %}
+            </div>
+
+            <div>
+                <label for="id_customer" class="block text-sm font-medium text-gray-700 mb-1">Customer *</label>
+                <select name="customer" id="id_customer" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Select a customer...</option>
+                    {% for customer in form.customer.field.queryset %}
+                    <option value="{{ customer.pk }}" {% if form.customer.value|stringformat:"i" == customer.pk|stringformat:"i" %}selected{% endif %}>
+                        {{ customer.first_name }} {{ customer.last_name }} ({{ customer.email }})
+                    </option>
+                    {% endfor %}
+                </select>
+                {% if form.customer.errors %}<p class="text-red-600 text-sm mt-1">{{ form.customer.errors.0 }}</p>{% endif %}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="id_start_date" class="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
+                    <input type="date" name="start_date" id="id_start_date" value="{{ form.start_date.value|date:'Y-m-d'|default:'' }}" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    {% if form.start_date.errors %}<p class="text-red-600 text-sm mt-1">{{ form.start_date.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label for="id_end_date" class="block text-sm font-medium text-gray-700 mb-1">End Date *</label>
+                    <input type="date" name="end_date" id="id_end_date" value="{{ form.end_date.value|date:'Y-m-d'|default:'' }}" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    {% if form.end_date.errors %}<p class="text-red-600 text-sm mt-1">{{ form.end_date.errors.0 }}</p>{% endif %}
+                </div>
+            </div>
+
+            <div>
+                <label for="id_daily_rate" class="block text-sm font-medium text-gray-700 mb-1">Daily Rate *</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-2 text-gray-500">$</span>
+                    <input type="number" step="0.01" name="daily_rate" id="id_daily_rate" value="{{ form.daily_rate.value|default:'' }}" required
+                        class="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                {% if form.daily_rate.errors %}<p class="text-red-600 text-sm mt-1">{{ form.daily_rate.errors.0 }}</p>{% endif %}
+            </div>
+        </div>
+
+        <div class="flex justify-end space-x-4 pt-6">
+            <a href="/dashboard/reservations/" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                Cancel
+            </a>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                {% if object %}Update Reservation{% else %}Create Reservation{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

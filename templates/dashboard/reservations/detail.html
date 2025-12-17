@@ -9,6 +9,12 @@
         <h1 class="text-3xl font-bold text-gray-900 mt-2">Reservation #{{ reservation.pk }}</h1>
     </div>
     <div class="flex gap-2">
+        {% if reservation.status == 'pending' or reservation.status == 'confirmed' %}
+        <a href="/dashboard/reservations/{{ reservation.pk }}/edit/"
+           class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
+            Edit
+        </a>
+        {% endif %}
         {% if reservation.can_checkout %}
         <a href="/dashboard/reservations/{{ reservation.pk }}/checkout/"
            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
@@ -19,6 +25,12 @@
         <a href="/dashboard/reservations/{{ reservation.pk }}/checkin/"
            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
             Check-in
+        </a>
+        {% endif %}
+        {% if reservation.status != 'cancelled' and reservation.status != 'completed' %}
+        <a href="/dashboard/reservations/{{ reservation.pk }}/cancel/"
+           class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+            Cancel
         </a>
         {% endif %}
     </div>

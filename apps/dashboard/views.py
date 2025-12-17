@@ -1,7 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.db.models import Sum, Count, Q
 from django.utils import timezone
@@ -135,6 +137,16 @@ class VehicleUpdateView(LoginRequiredMixin, TenantMixin, UpdateView):
         return f'/dashboard/vehicles/{self.object.pk}/'
 
 
+class VehicleDeleteView(LoginRequiredMixin, TenantMixin, DeleteView):
+    model = Vehicle
+    template_name = 'dashboard/vehicles/delete.html'
+    success_url = reverse_lazy('vehicle-list')
+
+    def get_success_url(self):
+        messages.success(self.request, 'Vehicle deleted successfully.')
+        return '/dashboard/vehicles/'
+
+
 class CustomerListView(LoginRequiredMixin, TenantMixin, ListView):
     model = Customer
     template_name = 'dashboard/customers/list.html'
@@ -160,6 +172,44 @@ class CustomerDetailView(LoginRequiredMixin, TenantMixin, DetailView):
     context_object_name = 'customer'
 
 
+class CustomerCreateView(LoginRequiredMixin, TenantMixin, CreateView):
+    model = Customer
+    template_name = 'dashboard/customers/form.html'
+    fields = ['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'state', 'zip_code',
+              'license_number', 'license_state', 'license_expiry']
+
+    def form_valid(self, form):
+        form.instance.tenant = self.request.tenant
+        messages.success(self.request, 'Customer created successfully.')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return '/dashboard/customers/'
+
+
+class CustomerUpdateView(LoginRequiredMixin, TenantMixin, UpdateView):
+    model = Customer
+    template_name = 'dashboard/customers/form.html'
+    fields = ['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'state', 'zip_code',
+              'license_number', 'license_state', 'license_expiry']
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Customer updated successfully.')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return f'/dashboard/customers/{self.object.pk}/'
+
+
+class CustomerDeleteView(LoginRequiredMixin, TenantMixin, DeleteView):
+    model = Customer
+    template_name = 'dashboard/customers/delete.html'
+
+    def get_success_url(self):
+        messages.success(self.request, 'Customer deleted successfully.')
+        return '/dashboard/customers/'
+
+
 class ReservationListView(LoginRequiredMixin, TenantMixin, ListView):
     model = Reservation
     template_name = 'dashboard/reservations/list.html'
@@ -178,6 +228,63 @@ class ReservationDetailView(LoginRequiredMixin, TenantMixin, DetailView):
     model = Reservation
     template_name = 'dashboard/reservations/detail.html'
     context_object_name = 'reservation'
+
+
+class ReservationCreateView(LoginRequiredMixin, TenantMixin, CreateView):
+    model = Reservation
+    template_name = 'dashboard/reservations/form.html'
+    fields = ['vehicle', 'customer', 'start_date', 'end_date', 'daily_rate']
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        tenant = self.request.tenant
+        form.fields['vehicle'].queryset = Vehicle.objects.filter(tenant=tenant, status='available')
+        form.fields['customer'].queryset = Customer.objects.filter(tenant=tenant)
+        return form
+
+    def form_valid(self, form):
+        form.instance.tenant = self.request.tenant
+        messages.success(self.request, 'Reservation created successfully.')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return '/dashboard/reservations/'
+
+
+class ReservationUpdateView(LoginRequiredMixin, TenantMixin, UpdateView):
+    model = Reservation
+    template_name = 'dashboard/reservations/form.html'
+    fields = ['vehicle', 'customer', 'start_date', 'end_date', 'daily_rate']
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        tenant = self.request.tenant
+        form.fields['vehicle'].queryset = Vehicle.objects.filter(tenant=tenant)
+        form.fields['customer'].queryset = Customer.objects.filter(tenant=tenant)
+        return form
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Reservation updated successfully.')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return f'/dashboard/reservations/{self.object.pk}/'
+
+
+@login_required
+def reservation_cancel(request, pk):
+    if not hasattr(request, 'tenant') or not request.tenant:
+        return redirect('/no-tenant/')
+
+    reservation = get_object_or_404(Reservation, pk=pk, tenant=request.tenant)
+
+    if request.method == 'POST':
+        reservation.status = 'cancelled'
+        reservation.save(update_fields=['status', 'updated_at'])
+        messages.success(request, 'Reservation cancelled successfully.')
+        return redirect('/dashboard/reservations/')
+
+    return render(request, 'dashboard/reservations/cancel.html', {'reservation': reservation})
 
 
 @login_required

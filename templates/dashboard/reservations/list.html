@@ -5,9 +5,14 @@
 {% block content %}
 <div class="flex justify-between items-center mb-8">
     <h1 class="text-3xl font-bold text-gray-900">Reservations</h1>
-    <a href="/dashboard/reservations/calendar/" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        View Calendar
-    </a>
+    <div class="flex space-x-2">
+        <a href="/dashboard/reservations/calendar/" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
+            View Calendar
+        </a>
+        <a href="/dashboard/reservations/create/" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            New Reservation
+        </a>
+    </div>
 </div>
 
 <!-- Filters -->
