@@ -9,208 +9,241 @@
 **Finally, rental software built for businesses like yours — not enterprise giants.**
 
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)]()
-[![Status](https://img.shields.io/badge/status-In%20Development-yellow.svg)]()
+[![Status](https://img.shields.io/badge/status-Epoch%201%20Complete-green.svg)]()
+[![Tests](https://img.shields.io/badge/tests-181%20passing-brightgreen.svg)]()
+[![Coverage](https://img.shields.io/badge/coverage-91%25-brightgreen.svg)]()
 
 ---
 
-## The Problem
+## Quick Start (Development)
 
-You're running a car rental business with 10-50 vehicles. You need software that:
-- Prevents double-bookings
-- Lets customers book online
-- Tracks maintenance
-- Generates contracts
-- Actually fits your budget
+```bash
+# Clone the repository
+git clone https://github.com/nestorwheelock/fleetflow.git
+cd fleetflow
 
-**But your options are:**
-- Enterprise software at $500-1,000/month (overkill)
-- Spreadsheets and sticky notes (chaos)
-- Generic booking tools (not built for rentals)
+# Start with Docker
+docker compose up -d
 
----
+# Run migrations
+docker compose exec web python manage.py migrate
 
-## The Solution
+# Create admin user
+docker compose exec web python manage.py createsuperuser
 
-**FleetFlow** is car rental management software designed specifically for local and regional rental businesses.
-
-One platform. Everything you need. Pricing that makes sense.
-
----
-
-## Features
-
-### Core Operations
-- **Fleet Management** — Track vehicles, photos, maintenance, mileage
-- **Reservation Calendar** — Visual scheduling with automatic conflict prevention
-- **Customer Database** — Profiles, licenses, documents, rental history
-- **Check-Out/Check-In** — Guided workflows with condition reports
-- **Contract Generation** — Professional PDFs, stored automatically
-
-### Online Booking
-- **Customer Portal** — Customers browse, book, and pay online
-- **Real-Time Availability** — No more phone tag
-- **PayPal Payments** — Secure online payments and deposits
-- **E-Signatures** — Contracts signed before pickup
-
-### Advanced Features
-- **Maintenance Scheduling** — Never miss an oil change
-- **GPS Fleet Tracking** — Know where every vehicle is
-- **Analytics Dashboard** — Revenue, utilization, trends
-- **License Verification** — Automatic validation
-
-### Mobile App *(Coming Soon)*
-- **iOS & Android** — Native mobile experience
-- **Find My Car** — Customers locate their rental
-- **Trip Sharing** — Safety feature for families
-- **Push Notifications** — Reminders and alerts
+# Access the app
+open http://localhost:9199
+open http://localhost:9199/admin
+```
 
 ---
 
-## Pricing
+## Development Status
 
-Simple, transparent pricing. No hidden fees. No contracts.
+### Epoch 1: Core Operations (MVP) - COMPLETE
 
-| Plan | Vehicles | Price | Features |
-|------|----------|-------|----------|
-| **Starter** | 1-10 | **$99/mo** | Core features, 1 user, email support |
-| **Professional** | 11-25 | **$199/mo** | + Online booking, 3 users, priority support |
-| **Business** | 26-50 | **$349/mo** | + GPS tracking, analytics, 10 users |
-| **Enterprise** | 50+ | **Custom** | Unlimited everything, dedicated support, custom integrations |
+| Story | Description | Status |
+|-------|-------------|--------|
+| S-027 | Multi-Tenant Architecture | Done |
+| S-028 | Tenant Onboarding & Setup | Partial |
+| S-029 | User Management & Roles | Done |
+| S-030 | Plan Limits & Feature Flags | Done |
+| S-001 | Vehicle Fleet Management | Done |
+| S-002 | Customer Management | Done |
+| S-003 | Reservation Calendar System | Done |
+| S-004 | Rental Workflow (Check-out/Check-in) | Done |
+| S-005 | Basic Contract Generation | Done |
+| S-006 | Staff Dashboard | Done |
 
-**All plans include:**
-- Unlimited reservations
-- Unlimited customers
-- PDF contracts
-- Email notifications
-- SSL security
-- Daily backups
-- 99.9% uptime SLA
+### Test Coverage
 
-**No setup fees. Cancel anytime. 14-day free trial.**
-
----
-
-## Why FleetFlow?
-
-### vs. Enterprise Software (TSD, Rent Centric, etc.)
-| They Charge | We Charge |
-|-------------|-----------|
-| $500-1,000/month | $99-349/month |
-| Setup fees | No setup fees |
-| Annual contracts | Month-to-month |
-| Training required | Intuitive interface |
-
-### vs. Generic Booking Tools
-| They Offer | We Offer |
-|------------|----------|
-| Generic scheduling | Built for car rentals |
-| No vehicle tracking | Full fleet management |
-| No contracts | PDF contract generation |
-| No condition reports | Check-in/check-out workflows |
-
-### vs. Spreadsheets
-| Spreadsheets | FleetFlow |
-|--------------|-----------|
-| Double-bookings happen | Conflict prevention |
-| Manual everything | Automated workflows |
-| No online booking | 24/7 customer self-service |
-| Lost documents | Everything searchable |
+```
+181 tests passing | 91% overall coverage
+├── tenants:      96%
+├── reservations: 97%
+├── fleet:        73-96%
+├── customers:    74-97%
+├── contracts:    87-93%
+└── dashboard:    85%
+```
 
 ---
 
-## How It Works
+## Architecture
 
-### 1. Sign Up (2 minutes)
-Create your account and add your business details.
+### Multi-Tenant SaaS Model
 
-### 2. Add Your Fleet (10 minutes)
-Enter your vehicles with photos, rates, and features.
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    FleetFlow Platform                        │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │  Tenant A   │  │  Tenant B   │  │  Tenant C   │  ...    │
+│  │  (Acme Car) │  │  (Best Rent)│  │  (Quick Car)│         │
+│  └─────────────┘  └─────────────┘  └─────────────┘         │
+│         │                │                │                 │
+│  ┌──────┴────────────────┴────────────────┴──────┐         │
+│  │            Shared PostgreSQL Database          │         │
+│  │         (tenant_id isolation per row)          │         │
+│  └────────────────────────────────────────────────┘         │
+└─────────────────────────────────────────────────────────────┘
+```
 
-### 3. Start Renting (Immediately)
-Accept reservations online or from your dashboard.
+### Project Structure
+
+```
+fleetflow/
+├── apps/                       # Django applications
+│   ├── tenants/               # Multi-tenant core
+│   │   ├── models.py          # Tenant, TenantUser
+│   │   ├── middleware.py      # Tenant context injection
+│   │   ├── mixins.py          # TenantViewMixin
+│   │   └── views.py           # Tenant API
+│   ├── fleet/                 # Vehicle management
+│   │   ├── models.py          # Vehicle, VehicleCategory, VehiclePhoto
+│   │   ├── serializers.py     # DRF serializers
+│   │   └── views.py           # REST API + views
+│   ├── customers/             # Customer management
+│   │   ├── models.py          # Customer, CustomerDocument
+│   │   └── views.py           # REST API + views
+│   ├── reservations/          # Booking system
+│   │   ├── models.py          # Reservation, ReservationExtra
+│   │   └── views.py           # Calendar, availability, check-in/out
+│   ├── contracts/             # Contract generation
+│   │   ├── models.py          # Contract, ConditionReport
+│   │   └── views.py           # PDF generation, signatures
+│   └── dashboard/             # Staff interface
+│       └── views.py           # Dashboard, quick actions
+├── templates/                  # Tailwind CSS templates
+├── tests/                      # 181 pytest tests
+├── config/                     # Django settings
+│   ├── settings/
+│   │   ├── base.py            # Common settings
+│   │   ├── development.py     # Dev settings
+│   │   └── production.py      # Prod settings
+│   └── urls.py                # URL routing
+├── requirements/               # Dependencies
+├── planning/                   # Planning documents
+├── Dockerfile                  # Python 3.12 image
+└── docker-compose.yml          # Full stack
+```
 
 ---
 
-## Technology
+## Technology Stack
 
-Built with modern, reliable technology:
+| Layer | Technology |
+|-------|------------|
+| **Backend** | Django 5.x, Django REST Framework |
+| **Database** | PostgreSQL 15 |
+| **Cache/Queue** | Redis 7, Celery |
+| **Frontend** | Tailwind CSS, HTMX, Alpine.js |
+| **PDF Generation** | ReportLab |
+| **Container** | Docker, Docker Compose |
+| **Testing** | pytest, pytest-django, pytest-cov |
 
-| Component | Technology |
-|-----------|------------|
-| Backend | Django 5.x (Python) |
-| Database | PostgreSQL |
-| Frontend | Tailwind CSS, HTMX, Alpine.js |
-| Payments | PayPal |
-| Hosting | AWS (99.9% uptime) |
-| Security | SSL, encrypted data, SOC 2 compliant |
+---
+
+## API Endpoints
+
+### Tenants
+- `GET /api/tenants/` - List tenants
+- `GET /api/tenants/{id}/stats/` - Tenant statistics
+- `GET /api/tenants/{id}/users/` - Tenant users
+- `GET /api/tenants/users/` - Tenant user management
+
+### Fleet
+- `GET /api/fleet/vehicles/` - List vehicles
+- `POST /api/fleet/vehicles/` - Create vehicle
+- `GET /api/fleet/vehicles/available/` - Available vehicles
+- `POST /api/fleet/vehicles/{id}/set_status/` - Change status
+- `GET /api/fleet/categories/` - Vehicle categories
+
+### Customers
+- `GET /api/customers/` - List customers
+- `POST /api/customers/` - Create customer
+- `GET /api/customers/{id}/rentals/` - Rental history
+- `POST /api/customers/{id}/blacklist/` - Blacklist customer
+- `POST /api/customers/{id}/unblacklist/` - Remove from blacklist
+
+### Reservations
+- `GET /api/reservations/` - List reservations
+- `POST /api/reservations/` - Create reservation
+- `GET /api/reservations/calendar/` - Calendar view
+- `GET /api/reservations/today/` - Today's schedule
+- `GET /api/reservations/upcoming/` - Upcoming reservations
+- `GET /api/reservations/check-availability/` - Check availability
+- `POST /api/reservations/{id}/checkout/` - Check out vehicle
+- `POST /api/reservations/{id}/checkin/` - Check in vehicle
+- `POST /api/reservations/{id}/cancel/` - Cancel reservation
+
+### Contracts
+- `GET /api/contracts/` - List contracts
+- `GET /api/contracts/{id}/pdf/` - View PDF
+- `GET /api/contracts/{id}/download/` - Download PDF
+- `POST /api/contracts/{id}/sign/` - Sign contract
+- `POST /api/contracts/{id}/condition-report/` - Add condition report
+
+### Dashboard
+- `GET /api/dashboard/stats/` - Dashboard statistics
+- `GET /api/dashboard/today/` - Today's checkouts/checkins
+- `GET /api/dashboard/revenue/` - Revenue summary
+- `GET /api/dashboard/fleet-status/` - Fleet status counts
+- `GET /api/dashboard/upcoming/` - Upcoming reservations
+- `POST /api/dashboard/quick-actions/new-reservation/` - Quick reservation
+- `POST /api/dashboard/quick-actions/new-customer/` - Quick customer
+- `POST /api/dashboard/quick-actions/vehicle-status/` - Quick status change
+
+---
+
+## Subscription Plans
+
+| Plan | Vehicles | Users | Price | Key Features |
+|------|----------|-------|-------|--------------|
+| **Starter** | 10 | 1 | $99/mo | Core features |
+| **Professional** | 25 | 3 | $199/mo | + Online booking |
+| **Business** | 50 | 10 | $349/mo | + GPS, analytics |
+| **Enterprise** | Unlimited | Unlimited | Custom | Full platform |
+
+---
+
+## Running Tests
+
+```bash
+# Run all tests
+docker compose exec web pytest tests/ -v
+
+# Run with coverage
+docker compose exec web pytest tests/ --cov=apps --cov-report=html
+
+# Run specific test file
+docker compose exec web pytest tests/test_reservations.py -v
+```
 
 ---
 
 ## Roadmap
 
-| Phase | Status | Features |
-|-------|--------|----------|
-| **Phase 1** | 🔨 Building | Core operations, calendar, contracts |
-| **Phase 2** | 📋 Planned | Online booking, payments, e-signatures |
-| **Phase 3** | 📋 Planned | GPS tracking, maintenance, analytics |
-| **Phase 4** | 📋 Planned | Mobile app (iOS/Android) |
+See [ROADMAP.md](ROADMAP.md) for detailed development plans.
+
+| Epoch | Status | Description |
+|-------|--------|-------------|
+| **1** | Done | Core Operations (MVP) |
+| **2** | Planned | Online Booking & Payments |
+| **3** | Planned | Advanced Features & Integrations |
+| **4** | Planned | Mobile App |
+| **5** | Planned | Platform & Growth |
 
 ---
 
-## Security & Compliance
+## Documentation
 
-- **256-bit SSL encryption** — All data encrypted in transit
-- **Encrypted at rest** — Database encryption
-- **Daily backups** — Automatic, redundant backups
-- **SOC 2 Type II** — Enterprise-grade security *(in progress)*
-- **GDPR compliant** — Data privacy controls
-- **PCI DSS** — Secure payment processing via PayPal
-
----
-
-## Support
-
-| Plan | Support Level |
-|------|---------------|
-| Starter | Email (24-48 hr response) |
-| Professional | Priority email (same-day response) |
-| Business | Email + phone support |
-| Enterprise | Dedicated account manager |
-
-**Resources:**
-- Knowledge base (coming soon)
-- Video tutorials (coming soon)
-- API documentation (coming soon)
-
----
-
-## FAQ
-
-**How long does setup take?**
-Most businesses are up and running in under an hour.
-
-**Can I import my existing data?**
-Yes! We can import customers, vehicles, and reservation history from spreadsheets or other systems.
-
-**Is there a contract?**
-No. Month-to-month billing. Cancel anytime.
-
-**What if I need more than 50 vehicles?**
-Contact us for Enterprise pricing tailored to your fleet size.
-
-**Do you offer a free trial?**
-Yes! 14 days free, no credit card required.
-
-**Can multiple staff members use it?**
-Yes. User limits depend on your plan (1-10+ users).
-
----
-
-## Get Started
-
-**Ready to stop losing money to spreadsheets?**
-
-[Start Free Trial →](#) | [Schedule Demo →](#) | [View Pricing →](#)
+- [Project Charter](planning/PROJECT_CHARTER.md)
+- [SPEC Summary](planning/SPEC_SUMMARY.md)
+- [User Stories](planning/stories/)
+- [Tasks](planning/tasks/)
+- [Wireframes](planning/wireframes/)
+- [Roadmap](ROADMAP.md)
 
 ---
 
@@ -221,38 +254,9 @@ Yes. User limits depend on your plan (1-10+ users).
 
 ---
 
-## Development
-
-This repository contains the planning and development documentation for FleetFlow.
-
-### Project Structure
-
-```
-fleetflow/
-├── planning/
-│   ├── PROJECT_CHARTER.md    # Project overview
-│   ├── SPEC_SUMMARY.md       # Quick reference
-│   ├── stories/              # User stories (S-001 to S-030+)
-│   ├── tasks/                # Technical tasks
-│   └── wireframes/           # UI designs
-├── LICENSE                   # Proprietary license
-└── README.md                 # This file
-```
-
-### Documentation
-
-- [Project Charter](planning/PROJECT_CHARTER.md) — Full project overview
-- [SPEC Summary](planning/SPEC_SUMMARY.md) — Quick reference
-- [User Stories](planning/stories/) — Feature requirements
-- [Wireframes](planning/wireframes/) — UI designs
-
----
-
 ## License
 
 **Proprietary License** — All Rights Reserved
-
-This software is proprietary and confidential. See [LICENSE](LICENSE) for details.
 
 ---
 
