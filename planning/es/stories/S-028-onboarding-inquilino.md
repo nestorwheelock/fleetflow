@@ -13,7 +13,7 @@
 
 ## Criterios de Aceptación
 - [ ] Puede registrarse con email y contraseña
-- [ ] Puede elegir un subdominio (nombre-empresa.fleetflow.io)
+- [ ] Puede elegir un subdominio (nombre-empresa.tudominio.com)
 - [ ] Puede ingresar información del negocio (nombre, dirección, teléfono, email)
 - [ ] Puede subir logo de la empresa
 - [ ] Puede seleccionar plan de suscripción (Inicial, Pro, Empresarial)
@@ -22,7 +22,7 @@
 - [ ] Asistente de configuración guiado para primer vehículo y cliente
 
 ## Flujo de Usuario
-1. Visitar fleetflow.io/registro
+1. Visitar página de registro
 2. Ingresar email, contraseña, nombre del negocio
 3. Elegir subdominio (verificar disponibilidad)
 4. Seleccionar plan de suscripción

@@ -13,7 +13,7 @@
 
 ## Acceptance Criteria
 - [ ] Can sign up with email and password
-- [ ] Can choose a subdomain (company-name.fleetflow.io)
+- [ ] Can choose a subdomain (company-name.yourdomain.com)
 - [ ] Can enter business information (name, address, phone, email)
 - [ ] Can upload company logo
 - [ ] Can select subscription plan (Starter, Pro, Business)
@@ -22,7 +22,7 @@
 - [ ] Guided setup wizard for first vehicle and customer
 
 ## User Flow
-1. Visit fleetflow.io/signup
+1. Visit signup page
 2. Enter email, password, business name
 3. Choose subdomain (check availability)
 4. Select subscription plan

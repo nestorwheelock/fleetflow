@@ -13,7 +13,7 @@
 
 ## Criterios de Aceptación
 - [ ] Cada inquilino tiene datos aislados (vehículos, clientes, reservaciones)
-- [ ] Inquilino identificado por subdominio (nombre-inquilino.fleetflow.io)
+- [ ] Inquilino identificado por subdominio (nombre-inquilino.tudominio.com)
 - [ ] Todas las consultas de base de datos automáticamente limitadas al inquilino actual
 - [ ] Almacenamiento de archivos aislado por inquilino (prefijos S3)
 - [ ] Caché Redis aislado por inquilino (prefijos de clave)

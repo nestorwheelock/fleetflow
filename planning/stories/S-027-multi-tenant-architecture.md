@@ -13,7 +13,7 @@
 
 ## Acceptance Criteria
 - [ ] Each tenant has isolated data (vehicles, customers, reservations)
-- [ ] Tenant identified by subdomain (tenant-name.fleetflow.io)
+- [ ] Tenant identified by subdomain (tenant-name.yourdomain.com)
 - [ ] All database queries automatically scoped to current tenant
 - [ ] File storage isolated per tenant (S3 prefixes)
 - [ ] Redis caching isolated per tenant (key prefixes)

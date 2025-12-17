@@ -167,7 +167,7 @@ FleetFlow is a multi-tenant SaaS platform for car rental management, designed sp
 |-----------|------------------|
 | Database | Shared database, tenant_id on all tables |
 | File Storage | Separate S3 prefixes per tenant |
-| Subdomains | tenant-name.fleetflow.io |
+| Subdomains | tenant-name.yourdomain.com |
 | API | Tenant identified via JWT token |
 | Caching | Redis key prefixes per tenant |
 

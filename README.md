@@ -216,8 +216,8 @@ Yes. User limits depend on your plan (1-10+ users).
 
 ## Contact
 
-- **Email**: support@fleetflow.io
-- **Website**: https://fleetflow.io
+- **GitHub**: https://github.com/nestorwheelock/fleetflow
+- **Developer**: https://linuxremotesupport.com
 
 ---
 

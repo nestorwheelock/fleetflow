@@ -168,7 +168,7 @@ FleetFlow es una plataforma SaaS multi-inquilino para gestión de alquiler de ve
 |------------|----------------------|
 | Base de Datos | BD compartida, tenant_id en todas las tablas |
 | Almacenamiento de Archivos | Prefijos S3 separados por inquilino |
-| Subdominios | nombre-inquilino.fleetflow.io |
+| Subdominios | nombre-inquilino.tudominio.com |
 | API | Inquilino identificado vía token JWT |
 | Caché | Prefijos de clave Redis por inquilino |
 
