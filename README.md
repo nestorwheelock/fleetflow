@@ -180,3 +180,190 @@ Every day without a proper system is:
 ---
 
 *CarFlow — Because your car rental business deserves better than spreadsheets.*
+
+---
+
+## Technical Documentation
+
+### Technology Stack
+
+| Component | Technology |
+|-----------|------------|
+| Backend | Django 5.x (Python 3.12+) |
+| Database | PostgreSQL 15 |
+| Frontend | Django Templates, Tailwind CSS, HTMX, Alpine.js |
+| Calendar | FullCalendar.js |
+| Task Queue | Celery + Redis |
+| Real-time | Django Channels (WebSocket) |
+| Mobile App | React Native + Expo (Epoch 4) |
+| Payments | PayPal SDK |
+| PDF Generation | ReportLab |
+| File Storage | AWS S3 / Local |
+| Maps | MapBox / Google Maps |
+
+### System Requirements
+
+- Python 3.12+
+- PostgreSQL 15+
+- Redis (for Celery task queue)
+- Node.js 18+ (for frontend tooling)
+- Git
+
+### Project Structure
+
+```
+carflow/
+├── config/                 # Django project settings
+│   ├── settings/
+│   │   ├── base.py
+│   │   ├── development.py
+│   │   └── production.py
+│   ├── urls.py
+│   └── wsgi.py
+├── apps/
+│   ├── vehicles/          # Fleet management
+│   ├── customers/         # Customer database
+│   ├── reservations/      # Booking and calendar
+│   ├── contracts/         # PDF contracts
+│   ├── payments/          # PayPal integration
+│   ├── maintenance/       # Service scheduling
+│   └── tracking/          # GPS integration
+├── templates/             # Django templates
+├── static/                # CSS, JS, images
+├── planning/              # SPEC documents
+│   ├── stories/           # User stories (S-001 to S-026)
+│   ├── tasks/             # Technical tasks (T-001 to T-024)
+│   └── wireframes/        # UI wireframes (W-001 to W-027)
+├── mobile/                # React Native app (Epoch 4)
+└── requirements/          # Python dependencies
+```
+
+### Development Setup
+
+```bash
+# Clone repository
+git clone https://github.com/nestorwheelock/carflow.git
+cd carflow
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# or: venv\Scripts\activate  # Windows
+
+# Install dependencies
+pip install -r requirements/development.txt
+
+# Setup database
+createdb carflow
+python manage.py migrate
+
+# Run development server
+python manage.py runserver
+```
+
+### Environment Variables
+
+```bash
+# .env file
+DEBUG=True
+SECRET_KEY=your-secret-key
+DATABASE_URL=postgres://user:pass@localhost/carflow
+REDIS_URL=redis://localhost:6379/0
+
+# PayPal (Epoch 2)
+PAYPAL_CLIENT_ID=your-client-id
+PAYPAL_CLIENT_SECRET=your-secret
+
+# AWS S3 (Production)
+AWS_ACCESS_KEY_ID=your-key
+AWS_SECRET_ACCESS_KEY=your-secret
+AWS_STORAGE_BUCKET_NAME=carflow-files
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=apps --cov-report=html
+
+# Run specific app tests
+pytest apps/vehicles/tests/
+```
+
+---
+
+## API Documentation
+
+API documentation will be available at `/api/docs/` when the server is running.
+
+### Key Endpoints (Epoch 1)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/vehicles/` | List all vehicles |
+| POST | `/api/vehicles/` | Create new vehicle |
+| GET | `/api/vehicles/{id}/` | Get vehicle details |
+| GET | `/api/customers/` | List all customers |
+| POST | `/api/reservations/` | Create reservation |
+| GET | `/api/calendar/events/` | Get calendar events |
+| POST | `/api/contracts/{id}/generate/` | Generate PDF contract |
+
+---
+
+## Deployment
+
+### Production Checklist
+
+- [ ] Set `DEBUG=False`
+- [ ] Configure production database
+- [ ] Set up Redis for Celery
+- [ ] Configure AWS S3 for file storage
+- [ ] Set up HTTPS with SSL certificate
+- [ ] Configure email service (SMTP)
+- [ ] Set up backup automation
+- [ ] Configure monitoring/logging
+
+### Recommended Hosting
+
+- **Web Server**: Gunicorn + Nginx
+- **Database**: AWS RDS or DigitalOcean Managed PostgreSQL
+- **Cache/Queue**: AWS ElastiCache or Redis Cloud
+- **Files**: AWS S3
+- **Hosting**: AWS EC2, DigitalOcean Droplet, or Railway
+
+---
+
+## Contributing
+
+This is a proprietary project. Contributions are only accepted from authorized developers under written agreement.
+
+---
+
+## License
+
+**Proprietary License** - All Rights Reserved
+
+This software is proprietary and confidential. No rights are granted to use, copy, modify, or distribute this software without explicit written authorization. See [LICENSE](LICENSE) for details.
+
+---
+
+## Support
+
+For licensing inquiries, technical support, or custom development requests, please contact the project maintainer.
+
+---
+
+## Version History
+
+| Version | Date | Description |
+|---------|------|-------------|
+| 0.1.0 | Dec 2025 | SPEC Phase - Planning complete |
+
+---
+
+## Acknowledgments
+
+Built with Django, PostgreSQL, Tailwind CSS, and modern web technologies.
