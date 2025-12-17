@@ -1,5 +1,9 @@
 # FleetFlow
 
+<p align="center">
+  <img src="assets/logos/fleetflow-logo-en.svg" alt="FleetFlow Logo" width="400">
+</p>
+
 ### Car Rental Management Software for Growing Businesses
 
 **Finally, rental software built for businesses like yours — not enterprise giants.**

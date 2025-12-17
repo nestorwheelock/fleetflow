@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100">
+  <defs>
+    <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0EA5E9"/>
+      <stop offset="100%" style="stop-color:#06B6D4"/>
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#F97316"/>
+      <stop offset="100%" style="stop-color:#FB923C"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icon: Stylized vehicle with flow lines -->
+  <g transform="translate(10, 15)">
+    <!-- Flow lines behind vehicle -->
+    <path d="M5 35 Q15 35 25 30 Q35 25 45 30" stroke="url(#flowGradient)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.4"/>
+    <path d="M0 45 Q15 45 30 38 Q45 31 55 38" stroke="url(#flowGradient)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <path d="M5 55 Q20 55 35 48 Q50 41 60 48" stroke="url(#flowGradient)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.4"/>
+
+    <!-- Vehicle body -->
+    <path d="M30 30 L45 30 Q50 30 52 25 L58 18 Q60 15 65 15 L85 15 Q90 15 90 20 L90 45 Q90 50 85 50 L35 50 Q30 50 30 45 Z" fill="url(#flowGradient)"/>
+
+    <!-- Windows -->
+    <path d="M53 20 L57 20 Q60 20 60 23 L60 28 L50 28 L53 20 Z" fill="#ffffff" opacity="0.9"/>
+    <rect x="62" y="20" width="12" height="10" rx="1" fill="#ffffff" opacity="0.9"/>
+    <rect x="76" y="20" width="10" height="10" rx="1" fill="#ffffff" opacity="0.9"/>
+
+    <!-- Wheels -->
+    <circle cx="45" cy="50" r="10" fill="#1e293b"/>
+    <circle cx="45" cy="50" r="6" fill="#475569"/>
+    <circle cx="45" cy="50" r="2" fill="#1e293b"/>
+
+    <circle cx="78" cy="50" r="10" fill="#1e293b"/>
+    <circle cx="78" cy="50" r="6" fill="#475569"/>
+    <circle cx="78" cy="50" r="2" fill="#1e293b"/>
+  </g>
+
+  <!-- Text: FleetFlow -->
+  <text x="115" y="62" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="42" font-weight="700">
+    <tspan fill="#0EA5E9">Fleet</tspan><tspan fill="#F97316">Flow</tspan>
+  </text>
+
+  <!-- Tagline -->
+  <text x="117" y="82" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#64748b" letter-spacing="0.5">
+    Gestión de Alquiler de Vehículos
+  </text>
+</svg>

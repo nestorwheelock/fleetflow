@@ -1,5 +1,9 @@
 # FleetFlow
 
+<p align="center">
+  <img src="assets/logos/fleetflow-logo-full.svg" alt="FleetFlow Logo" width="400">
+</p>
+
 ### Software de Gestión de Alquiler de Vehículos para Empresas en Crecimiento
 
 **Finalmente, software de alquiler diseñado para negocios como el tuyo — no para gigantes empresariales.**

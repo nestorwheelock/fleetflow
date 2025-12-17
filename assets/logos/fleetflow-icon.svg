@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0EA5E9"/>
+      <stop offset="100%" style="stop-color:#06B6D4"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#F97316"/>
+      <stop offset="100%" style="stop-color:#FB923C"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="48" fill="url(#flowGrad)"/>
+
+  <!-- Flow lines -->
+  <path d="M15 40 Q25 40 35 35 Q45 30 55 35" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.3"/>
+  <path d="M12 52 Q27 52 42 45 Q57 38 67 45" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.5"/>
+  <path d="M15 64 Q30 64 45 57 Q60 50 70 57" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.3"/>
+
+  <!-- Vehicle silhouette -->
+  <path d="M35 42 L50 42 Q55 42 57 37 L63 28 Q65 25 70 25 L82 25 Q87 25 87 30 L87 55 Q87 60 82 60 L40 60 Q35 60 35 55 Z" fill="#ffffff"/>
+
+  <!-- Windows -->
+  <path d="M58 30 L61 30 Q64 30 64 33 L64 38 L55 38 L58 30 Z" fill="url(#flowGrad)" opacity="0.8"/>
+  <rect x="66" y="30" width="9" height="9" rx="1" fill="url(#flowGrad)" opacity="0.8"/>
+  <rect x="77" y="30" width="6" height="9" rx="1" fill="url(#flowGrad)" opacity="0.8"/>
+
+  <!-- Wheels -->
+  <circle cx="48" cy="60" r="9" fill="#1e293b"/>
+  <circle cx="48" cy="60" r="5" fill="#475569"/>
+  <circle cx="75" cy="60" r="9" fill="#1e293b"/>
+  <circle cx="75" cy="60" r="5" fill="#475569"/>
+
+  <!-- Orange accent streak -->
+  <path d="M20 72 Q35 68 50 72 Q65 76 80 72" stroke="url(#accentGrad)" stroke-width="4" fill="none" stroke-linecap="round"/>
+</svg>
