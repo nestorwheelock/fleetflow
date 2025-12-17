@@ -95,7 +95,7 @@ Meet customers where they are—on their phones:
 | Locked into their ecosystem | Integrates with what YOU choose |
 
 **Do the math**: Generic software at $300/month = $3,600/year = $18,000 over 5 years.
-FleetFlow: **One investment starting at $800** for the complete foundation.
+FleetFlow: **One investment starting at $1,600** for the complete foundation.
 
 ---
 
@@ -105,10 +105,10 @@ We build FleetFlow in phases so you can start benefiting immediately:
 
 | Phase | What You Get | Investment |
 |-------|--------------|------------|
-| **Phase 1** | Core operations (fleet, customers, calendar, contracts, dashboard) | $800 - $1,000 |
-| **Phase 2** | Customer portal with online booking and PayPal | $700 - $900 |
-| **Phase 3** | Maintenance, GPS tracking, analytics | $800 - $1,000 |
-| **Phase 4** | Mobile app with driver tracking | $900 - $1,100 |
+| **Phase 1** | Core operations (fleet, customers, calendar, contracts, dashboard) | $1,600 - $2,000 |
+| **Phase 2** | Customer portal with online booking and PayPal | $1,400 - $1,800 |
+| **Phase 3** | Maintenance, GPS tracking, analytics | $1,600 - $2,000 |
+| **Phase 4** | Mobile app with driver tracking | $1,800 - $2,200 |
 
 **Start with Phase 1.** It handles 80% of your daily headaches. Add more phases when you're ready.
 
