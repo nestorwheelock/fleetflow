@@ -31,14 +31,14 @@ class TestVehicleModel:
     def test_vehicle_status_choices(self, db, tenant):
         from apps.fleet.models import Vehicle
         valid_statuses = ['available', 'rented', 'maintenance', 'unavailable']
-        for status in valid_statuses:
+        for i, status in enumerate(valid_statuses):
             vehicle = Vehicle.objects.create(
                 tenant=tenant,
                 make='Test',
                 model=f'Model{status}',
                 year=2023,
                 license_plate=f'{status[:3].upper()}001',
-                vin=f'VIN{status:0<17}',
+                vin=f'1HGBH41JXMN{i:06d}',
                 status=status,
                 daily_rate=50.00,
             )

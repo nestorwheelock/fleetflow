@@ -122,7 +122,7 @@ class TestTenantModel:
                 model=f'Model{i}',
                 year=2023,
                 license_plate=f'PLT{i:03d}',
-                vin=f'VIN{i:017d}',
+                vin=f'1HGBH41JXMN{i:06d}',
                 status='available',
                 daily_rate=50.00,
             )
