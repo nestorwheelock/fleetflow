@@ -112,7 +112,25 @@ We build FleetFlow in phases so you can start benefiting immediately:
 
 **Start with Phase 1.** It handles 80% of your daily headaches. Add more phases when you're ready.
 
-*Compare to hiring a developer at $100-150/hour. This would cost $15,000-30,000 traditionally. You're getting enterprise-quality software at a fraction of the price.*
+### How We Compare
+
+| Development Option | Complete System Cost | Timeline | What You Get |
+|-------------------|---------------------|----------|--------------|
+| **Traditional Agency** | $30,000 - $60,000 | 4-6 months | Enterprise overhead, meetings, revisions |
+| **Freelance Developer** | $15,000 - $30,000 | 2-4 months | Variable quality, single point of failure |
+| **Off-the-Shelf Software** | $18,000+ over 5 years | Immediate | Generic features, monthly fees forever |
+| **FleetFlow (AI-Assisted)** | **$6,400 - $8,000** | **4-8 weeks** | Custom-built, you own the code, no monthly fees |
+
+### Why We Can Offer Better Pricing
+
+We leverage **advanced AI coding assistants** to dramatically accelerate development while maintaining enterprise-quality standards:
+
+- **Faster Development** — AI assistance reduces development time by 60-70%
+- **Consistent Quality** — Automated code review, testing, and best practices
+- **Lower Overhead** — No agency markup, no bloated teams
+- **Your Benefit** — Savings passed directly to you
+
+*You're not paying for hours of typing. You're paying for expertise, architecture decisions, and a working product.*
 
 ---
 
