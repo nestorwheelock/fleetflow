@@ -3,100 +3,432 @@
 {% block title %}{{ customer }} - FleetFlow{% endblock %}
 
 {% block content %}
-<div class="flex justify-between items-center mb-8">
-    <div>
-        <a href="/dashboard/customers/" class="text-blue-600 hover:underline">&larr; Back to Customers</a>
-        <h1 class="text-3xl font-bold text-gray-900 mt-2">{{ customer.full_name }}</h1>
-    </div>
-    <div class="flex space-x-2">
-        <a href="/dashboard/customers/{{ customer.pk }}/edit/" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            Edit Customer
-        </a>
-        <a href="/dashboard/customers/{{ customer.pk }}/delete/" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
-            Delete
-        </a>
-    </div>
-</div>
-
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- Customer Details -->
-    <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
-        <h2 class="text-lg font-semibold mb-4">Customer Details</h2>
-        <dl class="grid grid-cols-2 gap-4">
-            <div>
-                <dt class="text-sm text-gray-500">Email</dt>
-                <dd class="font-medium">{{ customer.email }}</dd>
-            </div>
-            <div>
-                <dt class="text-sm text-gray-500">Phone</dt>
-                <dd class="font-medium">{{ customer.phone }}</dd>
-            </div>
-            <div>
-                <dt class="text-sm text-gray-500">Address</dt>
-                <dd class="font-medium">{{ customer.address|default:"N/A" }}</dd>
-            </div>
-            <div>
-                <dt class="text-sm text-gray-500">Date of Birth</dt>
-                <dd class="font-medium">{{ customer.date_of_birth|default:"N/A" }}</dd>
-            </div>
-            <div>
-                <dt class="text-sm text-gray-500">License Number</dt>
-                <dd class="font-medium">{{ customer.license_number|default:"N/A" }}</dd>
-            </div>
-            <div>
-                <dt class="text-sm text-gray-500">License Expiry</dt>
-                <dd class="font-medium">{{ customer.license_expiry|default:"N/A" }}</dd>
-            </div>
-        </dl>
-
-        {% if customer.license_image_front or customer.license_image_back %}
-        <hr class="my-6">
-        <h3 class="text-lg font-semibold mb-4">License Images</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {% if customer.license_image_front %}
-            <div>
-                <span class="text-sm text-gray-500 block mb-2">Front</span>
-                <img src="{{ customer.license_image_front.url }}" alt="License Front" class="max-w-full h-auto rounded border shadow-sm">
-            </div>
-            {% endif %}
-            {% if customer.license_image_back %}
-            <div>
-                <span class="text-sm text-gray-500 block mb-2">Back</span>
-                <img src="{{ customer.license_image_back.url }}" alt="License Back" class="max-w-full h-auto rounded border shadow-sm">
-            </div>
-            {% endif %}
+<div x-data="customerDetail()">
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <a href="/dashboard/customers/" class="text-blue-600 hover:underline">&larr; Back to Customers</a>
+            <h1 class="text-3xl font-bold text-gray-900 mt-2">{{ customer.full_name }}</h1>
         </div>
-        {% if customer.license_image_front and customer.license_image_back %}
-        <div class="mt-4">
-            <a href="/dashboard/customers/{{ customer.pk }}/license/" target="_blank"
-               class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
-                View Combined License
+        <div class="flex space-x-2">
+            <a href="/dashboard/customers/{{ customer.pk }}/edit/" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Edit Customer
+            </a>
+            <a href="/dashboard/customers/{{ customer.pk }}/delete/" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                Delete
             </a>
         </div>
-        {% endif %}
-        {% endif %}
     </div>
 
-    <!-- Status -->
-    <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-lg font-semibold mb-4">Status</h2>
-        <div class="space-y-4">
-            <div>
-                {% if customer.is_blacklisted %}
-                <span class="px-3 py-1 rounded text-sm font-medium bg-red-100 text-red-800">Blacklisted</span>
-                <p class="mt-2 text-sm text-gray-500">{{ customer.blacklist_reason }}</p>
-                {% else %}
-                <span class="px-3 py-1 rounded text-sm font-medium bg-green-100 text-green-800">Active</span>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Customer Details -->
+        <div class="lg:col-span-2 space-y-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-lg font-semibold mb-4">Customer Details</h2>
+                <dl class="grid grid-cols-2 gap-4">
+                    <div>
+                        <dt class="text-sm text-gray-500">Email</dt>
+                        <dd class="font-medium">{{ customer.email }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm text-gray-500">Phone</dt>
+                        <dd class="font-medium">{{ customer.phone }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm text-gray-500">Address</dt>
+                        <dd class="font-medium">{{ customer.address|default:"N/A" }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm text-gray-500">Date of Birth</dt>
+                        <dd class="font-medium">{{ customer.date_of_birth|default:"N/A" }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm text-gray-500">License Number</dt>
+                        <dd class="font-medium">{{ customer.license_number|default:"N/A" }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm text-gray-500">License Expiry</dt>
+                        <dd class="font-medium">{{ customer.license_expiry|default:"N/A" }}</dd>
+                    </div>
+                </dl>
+
+                {% if customer.license_image_front or customer.license_image_back %}
+                <hr class="my-6">
+                <h3 class="text-lg font-semibold mb-4">License Images</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% if customer.license_image_front %}
+                    <div>
+                        <span class="text-sm text-gray-500 block mb-2">Front</span>
+                        <img src="{{ customer.license_image_front.url }}" alt="License Front" class="max-w-full h-auto rounded border shadow-sm">
+                    </div>
+                    {% endif %}
+                    {% if customer.license_image_back %}
+                    <div>
+                        <span class="text-sm text-gray-500 block mb-2">Back</span>
+                        <img src="{{ customer.license_image_back.url }}" alt="License Back" class="max-w-full h-auto rounded border shadow-sm">
+                    </div>
+                    {% endif %}
+                </div>
+                {% if customer.license_image_front and customer.license_image_back %}
+                <div class="mt-4">
+                    <a href="/dashboard/customers/{{ customer.pk }}/license/" target="_blank"
+                       class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        View Combined License
+                    </a>
+                </div>
+                {% endif %}
                 {% endif %}
             </div>
-            <div>
-                <span class="text-sm text-gray-500">Total Rentals</span>
-                <div class="text-2xl font-bold">{{ customer.total_rentals }}</div>
+
+            <!-- Insurance Records -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold">Insurance Records</h2>
+                    {% if can_use_ocr %}
+                    <button type="button" @click="showInsuranceUpload = true"
+                        class="inline-flex items-center px-3 py-1.5 border border-blue-600 text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Add Insurance
+                    </button>
+                    {% endif %}
+                </div>
+
+                {% if insurance_records %}
+                <div class="space-y-4">
+                    {% for insurance in insurance_records %}
+                    <div class="border rounded-lg p-4 {% if insurance.is_active %}border-green-200 bg-green-50{% else %}border-gray-200{% endif %}">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-medium text-gray-900">{{ insurance.company_name }}</h3>
+                                <p class="text-sm text-gray-500">Policy: {{ insurance.policy_number }}</p>
+                            </div>
+                            <div class="text-right">
+                                {% if insurance.is_active %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Active
+                                </span>
+                                {% else %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    Inactive
+                                </span>
+                                {% endif %}
+                                {% if insurance.is_expired %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 ml-1">
+                                    Expired
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
+                            <div>
+                                <span class="text-gray-500">Effective:</span>
+                                <span class="font-medium">{{ insurance.effective_date|default:"N/A" }}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">Expires:</span>
+                                <span class="font-medium">{{ insurance.expiration_date|default:"N/A" }}</span>
+                            </div>
+                            {% if insurance.policyholder_name %}
+                            <div class="col-span-2">
+                                <span class="text-gray-500">Policyholder:</span>
+                                <span class="font-medium">{{ insurance.policyholder_name }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% if insurance.ocr_confidence %}
+                        <div class="mt-2 text-xs text-gray-400">
+                            OCR Confidence: {{ insurance.ocr_confidence|floatformat:0 }}%
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-gray-500 text-center py-8">No insurance records found.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Status -->
+        <div class="bg-white rounded-lg shadow p-6 h-fit">
+            <h2 class="text-lg font-semibold mb-4">Status</h2>
+            <div class="space-y-4">
+                <div>
+                    {% if customer.is_blacklisted %}
+                    <span class="px-3 py-1 rounded text-sm font-medium bg-red-100 text-red-800">Blacklisted</span>
+                    <p class="mt-2 text-sm text-gray-500">{{ customer.blacklist_reason }}</p>
+                    {% else %}
+                    <span class="px-3 py-1 rounded text-sm font-medium bg-green-100 text-green-800">Active</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <span class="text-sm text-gray-500">Total Rentals</span>
+                    <div class="text-2xl font-bold">{{ customer.total_rentals }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Insurance Upload Modal -->
+    {% if can_use_ocr %}
+    <div x-show="showInsuranceUpload" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div x-show="showInsuranceUpload" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showInsuranceUpload = false"></div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+
+            <div x-show="showInsuranceUpload" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+
+                <div>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                        Add Insurance Card
+                    </h3>
+                    <p class="mt-2 text-sm text-gray-500">
+                        Upload an insurance card image to automatically extract information.
+                    </p>
+                </div>
+
+                <div class="mt-4">
+                    <input type="file" accept="image/*" @change="onInsuranceImageSelected($event)"
+                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                </div>
+
+                <div x-show="insurancePreview" class="mt-4">
+                    <img :src="insurancePreview" alt="Preview" class="max-w-full h-48 object-contain mx-auto rounded border">
+                </div>
+
+                <div class="mt-5 sm:mt-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" @click="parseInsurance()"
+                        :disabled="!insuranceFile || parsingInsurance"
+                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span x-show="!parsingInsurance">Parse & Add</span>
+                        <span x-show="parsingInsurance" class="flex items-center">
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Parsing...
+                        </span>
+                    </button>
+                    <button type="button" @click="showInsuranceUpload = false; insuranceFile = null; insurancePreview = ''"
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Insurance Review Modal -->
+    <div x-show="showInsuranceReview" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div x-show="showInsuranceReview" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showInsuranceReview = false"></div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+
+            <div x-show="showInsuranceReview" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
+
+                <div class="sm:flex sm:items-start">
+                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
+                        <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-grow">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                            Insurance Data Extracted
+                        </h3>
+                        <p class="mt-1 text-sm text-gray-500">
+                            Confidence: <span class="font-medium" :class="insuranceData.confidence >= 0.8 ? 'text-green-600' : 'text-yellow-600'" x-text="(insuranceData.confidence * 100).toFixed(0) + '%'"></span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-4 border-t border-gray-200 pt-4">
+                    <dl class="grid grid-cols-2 gap-4">
+                        <div>
+                            <dt class="text-sm text-gray-500">Company</dt>
+                            <dd class="font-medium" x-text="insuranceData.company_name || 'N/A'"></dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-gray-500">Policy Number</dt>
+                            <dd class="font-medium" x-text="insuranceData.policy_number || 'N/A'"></dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-gray-500">Effective Date</dt>
+                            <dd class="font-medium" x-text="insuranceData.effective_date || 'N/A'"></dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-gray-500">Expiration Date</dt>
+                            <dd class="font-medium" x-text="insuranceData.expiration_date || 'N/A'"></dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-gray-500">Policyholder</dt>
+                            <dd class="font-medium" x-text="insuranceData.policyholder_name || 'N/A'"></dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-gray-500">Coverage Type</dt>
+                            <dd class="font-medium" x-text="insuranceData.coverage_type || 'N/A'"></dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <div class="mt-5 sm:mt-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" @click="saveInsurance()"
+                        :disabled="savingInsurance"
+                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+                        <span x-show="!savingInsurance">Save Insurance</span>
+                        <span x-show="savingInsurance">Saving...</span>
+                    </button>
+                    <button type="button" @click="showInsuranceReview = false"
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Toast Notification -->
+    <div x-show="toast.show" x-cloak
+        x-transition:enter="transform ease-out duration-300 transition"
+        x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+        x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
+        class="fixed bottom-4 right-4 max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5">
+        <div class="p-4">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <svg x-show="toast.type === 'success'" class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <svg x-show="toast.type === 'error'" class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="ml-3 w-0 flex-1">
+                    <p class="text-sm font-medium text-gray-900" x-text="toast.message"></p>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+{% if can_use_ocr %}
+<script>
+function customerDetail() {
+    return {
+        showInsuranceUpload: false,
+        showInsuranceReview: false,
+        insuranceFile: null,
+        insurancePreview: '',
+        insuranceData: {},
+        parsingInsurance: false,
+        savingInsurance: false,
+        toast: { show: false, message: '', type: 'success' },
+
+        onInsuranceImageSelected(event) {
+            const file = event.target.files[0];
+            if (file) {
+                this.insuranceFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.insurancePreview = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        },
+
+        async parseInsurance() {
+            if (!this.insuranceFile) return;
+
+            this.parsingInsurance = true;
+
+            try {
+                const formData = new FormData();
+                formData.append('image', this.insuranceFile);
+
+                const response = await fetch('/api/automation/parse-insurance/{{ customer.pk }}/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': this.getCSRFToken()
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    this.insuranceData = data.data;
+                    this.showInsuranceUpload = false;
+                    this.showInsuranceReview = true;
+                } else {
+                    this.showToast(data.error || 'Failed to parse insurance card', 'error');
+                }
+            } catch (error) {
+                this.showToast('Error parsing insurance: ' + error.message, 'error');
+            } finally {
+                this.parsingInsurance = false;
+            }
+        },
+
+        async saveInsurance() {
+            this.savingInsurance = true;
+
+            try {
+                const response = await fetch('/api/automation/apply-insurance/{{ customer.pk }}/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': this.getCSRFToken()
+                    },
+                    body: JSON.stringify({ data: this.insuranceData })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    this.showInsuranceReview = false;
+                    this.showToast('Insurance record added successfully!', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    this.showToast(data.error || 'Failed to save insurance', 'error');
+                }
+            } catch (error) {
+                this.showToast('Error saving insurance: ' + error.message, 'error');
+            } finally {
+                this.savingInsurance = false;
+            }
+        },
+
+        showToast(message, type) {
+            this.toast = { show: true, message, type };
+            setTimeout(() => this.toast.show = false, 5000);
+        },
+
+        getCSRFToken() {
+            const name = 'csrftoken';
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [cookieName, cookieValue] = cookie.trim().split('=');
+                if (cookieName === name) {
+                    return cookieValue;
+                }
+            }
+            return '';
+        }
+    };
+}
+</script>
+{% endif %}
 {% endblock %}

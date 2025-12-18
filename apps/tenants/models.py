@@ -133,3 +133,93 @@ class TenantModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+class TenantSettings(models.Model):
+    """Tenant-specific settings including API keys and automation configuration."""
+
+    MODEL_CHOICES = [
+        ('anthropic/claude-3.5-sonnet', 'Claude 3.5 Sonnet (Recommended)'),
+        ('anthropic/claude-3-opus', 'Claude 3 Opus'),
+        ('openai/gpt-4-vision-preview', 'GPT-4 Vision'),
+        ('google/gemini-pro-vision', 'Gemini Pro Vision'),
+    ]
+
+    tenant = models.OneToOneField(
+        Tenant,
+        on_delete=models.CASCADE,
+        related_name='settings'
+    )
+
+    # OpenRouter API Configuration
+    openrouter_api_key_encrypted = models.BinaryField(blank=True, null=True)
+    openrouter_enabled = models.BooleanField(default=False)
+    openrouter_model = models.CharField(
+        max_length=100,
+        choices=MODEL_CHOICES,
+        default='anthropic/claude-3.5-sonnet',
+        help_text='Vision model to use for OCR'
+    )
+
+    # OCR Feature Toggles
+    auto_parse_license = models.BooleanField(
+        default=True,
+        help_text='Automatically parse license images on upload'
+    )
+    auto_parse_insurance = models.BooleanField(
+        default=True,
+        help_text='Automatically parse insurance documents on upload'
+    )
+
+    # Rate limiting
+    ocr_requests_today = models.IntegerField(default=0)
+    ocr_requests_reset_at = models.DateField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Tenant Settings'
+        verbose_name_plural = 'Tenant Settings'
+
+    def __str__(self):
+        return f'Settings for {self.tenant.name}'
+
+    @property
+    def has_api_key(self):
+        """Check if an API key is configured (without exposing it)."""
+        return bool(self.openrouter_api_key_encrypted)
+
+    def get_api_key(self):
+        """Decrypt and return the API key."""
+        if not self.openrouter_api_key_encrypted:
+            return None
+        from apps.automation.ocr.utils.encryption import decrypt_api_key
+        return decrypt_api_key(bytes(self.openrouter_api_key_encrypted))
+
+    def set_api_key(self, api_key):
+        """Encrypt and store the API key."""
+        if not api_key:
+            self.openrouter_api_key_encrypted = None
+        else:
+            from apps.automation.ocr.utils.encryption import encrypt_api_key
+            self.openrouter_api_key_encrypted = encrypt_api_key(api_key)
+
+    def can_make_ocr_request(self):
+        """Check if tenant can make another OCR request (rate limiting)."""
+        from datetime import date
+        today = date.today()
+
+        # Reset counter if it's a new day
+        if self.ocr_requests_reset_at != today:
+            self.ocr_requests_today = 0
+            self.ocr_requests_reset_at = today
+            self.save(update_fields=['ocr_requests_today', 'ocr_requests_reset_at'])
+
+        # Limit: 100 requests per day
+        return self.ocr_requests_today < 100
+
+    def increment_ocr_requests(self):
+        """Increment the OCR request counter."""
+        self.ocr_requests_today += 1
+        self.save(update_fields=['ocr_requests_today'])

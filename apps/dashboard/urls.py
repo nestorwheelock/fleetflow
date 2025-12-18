@@ -34,6 +34,9 @@ urlpatterns = [
     path('contracts/<int:pk>/', views.ContractDetailView.as_view(), name='contract-detail'),
     path('contracts/<int:pk>/pdf/', views.contract_pdf, name='contract-pdf'),
 
+    # Settings
+    path('settings/', views.automation_settings, name='settings'),
+
     path('api/dashboard/stats/', views.DashboardStatsAPI.as_view(), name='api-dashboard-stats'),
     path('api/dashboard/today/', views.DashboardTodayAPI.as_view(), name='api-dashboard-today'),
     path('api/dashboard/revenue/', views.DashboardRevenueAPI.as_view(), name='api-dashboard-revenue'),

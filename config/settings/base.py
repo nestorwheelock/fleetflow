@@ -34,6 +34,7 @@ LOCAL_APPS = [
     'apps.reservations',
     'apps.contracts',
     'apps.dashboard',
+    'apps.automation',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -136,10 +137,14 @@ PLAN_LIMITS = {
 
 PLAN_FEATURES = {
     'starter': ['fleet', 'customers', 'reservations', 'contracts', 'dashboard'],
-    'professional': ['fleet', 'customers', 'reservations', 'contracts', 'dashboard', 'online_booking', 'payments', 'esignatures'],
-    'business': ['fleet', 'customers', 'reservations', 'contracts', 'dashboard', 'online_booking', 'payments', 'esignatures', 'gps', 'analytics', 'api'],
-    'enterprise': ['fleet', 'customers', 'reservations', 'contracts', 'dashboard', 'online_booking', 'payments', 'esignatures', 'gps', 'analytics', 'api', 'whitelabel'],
+    'professional': ['fleet', 'customers', 'reservations', 'contracts', 'dashboard', 'online_booking', 'payments', 'esignatures', 'license_ocr', 'insurance_ocr'],
+    'business': ['fleet', 'customers', 'reservations', 'contracts', 'dashboard', 'online_booking', 'payments', 'esignatures', 'gps', 'analytics', 'api', 'license_ocr', 'insurance_ocr'],
+    'enterprise': ['fleet', 'customers', 'reservations', 'contracts', 'dashboard', 'online_booking', 'payments', 'esignatures', 'gps', 'analytics', 'api', 'whitelabel', 'license_ocr', 'insurance_ocr'],
 }
+
+FIELD_ENCRYPTION_KEY = config('FIELD_ENCRYPTION_KEY', default='')
+
+OPENROUTER_DEFAULT_MODEL = 'anthropic/claude-3.5-sonnet'
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'

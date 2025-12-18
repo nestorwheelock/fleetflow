@@ -1,0 +1,299 @@
+{% extends 'base.html' %}
+
+{% block title %}Automation Settings - FleetFlow{% endblock %}
+
+{% block content %}
+<div x-data="automationSettings()" x-init="init()">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Automation Settings</h1>
+    </div>
+
+    {% if not has_ocr_feature %}
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+        <div class="flex">
+            <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-yellow-800">OCR Features Not Available</h3>
+                <p class="mt-1 text-sm text-yellow-700">
+                    Your current plan ({{ tenant.plan|title }}) does not include OCR features.
+                    Upgrade to Professional or higher to enable automatic license and insurance parsing.
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">OpenRouter API Configuration</h2>
+            <p class="mt-1 text-sm text-gray-500">
+                Configure your OpenRouter API key to enable AI-powered document parsing.
+            </p>
+        </div>
+
+        <div class="p-6 space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    API Key
+                </label>
+                <div class="flex space-x-3">
+                    <div class="flex-grow relative">
+                        <input
+                            type="password"
+                            x-model="apiKey"
+                            :disabled="!has_ocr_feature"
+                            placeholder="{{ settings.has_api_key|yesno:'API key is configured,Enter your OpenRouter API key' }}"
+                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        >
+                        {% if settings.has_api_key %}
+                        <span class="absolute right-3 top-2.5 text-green-500">
+                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                        </span>
+                        {% endif %}
+                    </div>
+                    <button
+                        type="button"
+                        @click="testApiKey()"
+                        :disabled="!apiKey || testing || !has_ocr_feature"
+                        class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <span x-show="!testing">Test Key</span>
+                        <span x-show="testing" class="flex items-center">
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Testing...
+                        </span>
+                    </button>
+                </div>
+                <p class="mt-2 text-sm text-gray-500">
+                    Get your API key from <a href="https://openrouter.ai/keys" target="_blank" class="text-blue-600 hover:underline">OpenRouter</a>.
+                </p>
+                <div x-show="testResult" x-cloak class="mt-2">
+                    <p :class="testResult.valid ? 'text-green-600' : 'text-red-600'" class="text-sm" x-text="testResult.message"></p>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    AI Model
+                </label>
+                <select
+                    x-model="selectedModel"
+                    :disabled="!has_ocr_feature"
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                >
+                    {% for value, label in available_models %}
+                    <option value="{{ value }}" {% if settings.openrouter_model == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="text-sm font-medium text-gray-900 mb-4">OCR Features</h3>
+                <div class="space-y-4">
+                    <label class="flex items-center">
+                        <input
+                            type="checkbox"
+                            x-model="ocrEnabled"
+                            :disabled="!has_ocr_feature"
+                            class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                        <span class="ml-3 text-sm text-gray-700">Enable OCR processing</span>
+                    </label>
+
+                    <label class="flex items-center">
+                        <input
+                            type="checkbox"
+                            x-model="autoParseL"
+                            :disabled="!ocrEnabled || !has_ocr_feature"
+                            class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                        <span class="ml-3 text-sm text-gray-700">Auto-parse license images on upload</span>
+                    </label>
+
+                    <label class="flex items-center">
+                        <input
+                            type="checkbox"
+                            x-model="autoParseI"
+                            :disabled="!ocrEnabled || !has_ocr_feature"
+                            class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                        <span class="ml-3 text-sm text-gray-700">Auto-parse insurance images on upload</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="text-sm font-medium text-gray-900 mb-2">Usage Statistics</h3>
+                <p class="text-sm text-gray-500">
+                    OCR Requests Today: <span class="font-medium">{{ settings.ocr_requests_today }}</span> / 100
+                </p>
+                <div class="mt-2 w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full" style="width: {{ settings.ocr_requests_today }}%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3">
+            <button
+                type="button"
+                @click="saveSettings()"
+                :disabled="saving || !has_ocr_feature"
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                <span x-show="!saving">Save Settings</span>
+                <span x-show="saving" class="flex items-center">
+                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Saving...
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <div x-show="message" x-cloak class="fixed bottom-4 right-4 max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5">
+        <div class="p-4">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <svg x-show="messageType === 'success'" class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <svg x-show="messageType === 'error'" class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="ml-3 w-0 flex-1">
+                    <p class="text-sm font-medium text-gray-900" x-text="message"></p>
+                </div>
+                <div class="ml-4 flex-shrink-0 flex">
+                    <button @click="message = ''" class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500">
+                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function automationSettings() {
+    return {
+        apiKey: '',
+        selectedModel: '{{ settings.openrouter_model }}',
+        ocrEnabled: {{ settings.openrouter_enabled|yesno:'true,false' }},
+        autoParseL: {{ settings.auto_parse_license|yesno:'true,false' }},
+        autoParseI: {{ settings.auto_parse_insurance|yesno:'true,false' }},
+        has_ocr_feature: {{ has_ocr_feature|yesno:'true,false' }},
+        testing: false,
+        saving: false,
+        testResult: null,
+        message: '',
+        messageType: 'success',
+
+        init() {
+            // Nothing special needed
+        },
+
+        async testApiKey() {
+            if (!this.apiKey) return;
+
+            this.testing = true;
+            this.testResult = null;
+
+            try {
+                const response = await fetch('/api/tenants/settings/test-api-key/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': this.getCSRFToken()
+                    },
+                    body: JSON.stringify({ api_key: this.apiKey })
+                });
+
+                const data = await response.json();
+                this.testResult = {
+                    valid: data.valid,
+                    message: data.valid ? 'API key is valid!' : (data.error || 'Invalid API key')
+                };
+            } catch (error) {
+                this.testResult = {
+                    valid: false,
+                    message: 'Failed to test API key: ' + error.message
+                };
+            } finally {
+                this.testing = false;
+            }
+        },
+
+        async saveSettings() {
+            this.saving = true;
+
+            const payload = {
+                openrouter_model: this.selectedModel,
+                openrouter_enabled: this.ocrEnabled,
+                auto_parse_license: this.autoParseL,
+                auto_parse_insurance: this.autoParseI
+            };
+
+            if (this.apiKey) {
+                payload.api_key = this.apiKey;
+            }
+
+            try {
+                const response = await fetch('/api/tenants/settings/', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': this.getCSRFToken()
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    this.showMessage('Settings saved successfully!', 'success');
+                    if (this.apiKey) {
+                        this.apiKey = '';
+                    }
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    const data = await response.json();
+                    this.showMessage(data.error || 'Failed to save settings', 'error');
+                }
+            } catch (error) {
+                this.showMessage('Failed to save settings: ' + error.message, 'error');
+            } finally {
+                this.saving = false;
+            }
+        },
+
+        showMessage(msg, type) {
+            this.message = msg;
+            this.messageType = type;
+            setTimeout(() => this.message = '', 5000);
+        },
+
+        getCSRFToken() {
+            const name = 'csrftoken';
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [cookieName, cookieValue] = cookie.trim().split('=');
+                if (cookieName === name) {
+                    return cookieValue;
+                }
+            }
+            return '';
+        }
+    };
+}
+</script>
+{% endblock %}

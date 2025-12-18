@@ -1,10 +1,22 @@
 import pytest
+import tempfile
+import shutil
 from datetime import date
 from django.contrib.auth import get_user_model
-from django.test import RequestFactory
+from django.test import RequestFactory, override_settings
 from rest_framework.test import APIClient
 
 User = get_user_model()
+
+
+@pytest.fixture(autouse=True)
+def temp_media_root(settings, tmp_path):
+    """Use a temporary directory for media files during tests."""
+    settings.MEDIA_ROOT = tmp_path / 'media'
+    settings.MEDIA_ROOT.mkdir(exist_ok=True)
+    yield settings.MEDIA_ROOT
+    if settings.MEDIA_ROOT.exists():
+        shutil.rmtree(settings.MEDIA_ROOT, ignore_errors=True)
 
 
 class TenantAPIClient(APIClient):

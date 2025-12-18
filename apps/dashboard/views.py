@@ -171,12 +171,41 @@ class CustomerDetailView(LoginRequiredMixin, TenantMixin, DetailView):
     template_name = 'dashboard/customers/detail.html'
     context_object_name = 'customer'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from apps.customers.models import CustomerInsurance
+        from apps.automation.integration.feature_check import check_ocr_access
 
-class CustomerCreateView(LoginRequiredMixin, TenantMixin, CreateView):
+        context['insurance_records'] = CustomerInsurance.objects.filter(
+            customer=self.object
+        ).order_by('-is_active', '-effective_date')
+
+        tenant = self.request.tenant
+        context['can_use_ocr'] = check_ocr_access(tenant) if tenant else False
+        return context
+
+
+class CustomerOCRMixin:
+    def get_ocr_context(self):
+        from apps.automation.integration.feature_check import check_ocr_access
+        tenant = self.request.tenant
+        can_use_ocr = check_ocr_access(tenant) if tenant else False
+        return {
+            'can_use_ocr': can_use_ocr,
+            'ocr_enabled': can_use_ocr,
+        }
+
+
+class CustomerCreateView(CustomerOCRMixin, LoginRequiredMixin, TenantMixin, CreateView):
     model = Customer
     template_name = 'dashboard/customers/form.html'
     fields = ['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'state', 'zip_code',
               'license_number', 'license_state', 'license_expiry', 'license_image_front', 'license_image_back']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(self.get_ocr_context())
+        return context
 
     def form_valid(self, form):
         form.instance.tenant = self.request.tenant
@@ -187,11 +216,16 @@ class CustomerCreateView(LoginRequiredMixin, TenantMixin, CreateView):
         return '/dashboard/customers/'
 
 
-class CustomerUpdateView(LoginRequiredMixin, TenantMixin, UpdateView):
+class CustomerUpdateView(CustomerOCRMixin, LoginRequiredMixin, TenantMixin, UpdateView):
     model = Customer
     template_name = 'dashboard/customers/form.html'
     fields = ['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'state', 'zip_code',
               'license_number', 'license_state', 'license_expiry', 'license_image_front', 'license_image_back']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(self.get_ocr_context())
+        return context
 
     def form_valid(self, form):
         messages.success(self.request, 'Customer updated successfully.')
@@ -589,3 +623,41 @@ def customer_combined_license(request, pk):
     buffer.seek(0)
 
     return HttpResponse(buffer.getvalue(), content_type='image/jpeg')
+
+
+@login_required
+def automation_settings(request):
+    if not hasattr(request, 'tenant') or not request.tenant:
+        return redirect('/no-tenant/')
+
+    tenant = request.tenant
+
+    from apps.tenants.models import TenantUser, TenantSettings
+    tenant_user = TenantUser.objects.filter(
+        user=request.user,
+        tenant=tenant,
+        is_active=True
+    ).first()
+
+    if not tenant_user or tenant_user.role != 'owner':
+        messages.error(request, 'Only tenant owners can access settings.')
+        return redirect('dashboard-home')
+
+    settings, created = TenantSettings.objects.get_or_create(tenant=tenant)
+
+    from apps.automation.integration.feature_check import tenant_has_feature
+    has_ocr_feature = tenant_has_feature(tenant, 'license_ocr')
+
+    context = {
+        'settings': settings,
+        'tenant': tenant,
+        'has_ocr_feature': has_ocr_feature,
+        'available_models': [
+            ('anthropic/claude-3.5-sonnet', 'Claude 3.5 Sonnet (Recommended)'),
+            ('anthropic/claude-3-haiku', 'Claude 3 Haiku (Faster, cheaper)'),
+            ('google/gemini-flash-1.5', 'Gemini Flash 1.5'),
+            ('openai/gpt-4o-mini', 'GPT-4o Mini'),
+        ],
+    }
+
+    return render(request, 'dashboard/settings/automation.html', context)
