@@ -17,6 +17,7 @@ urlpatterns = [
     path('customers/<int:pk>/', views.CustomerDetailView.as_view(), name='customer-detail'),
     path('customers/<int:pk>/edit/', views.CustomerUpdateView.as_view(), name='customer-edit'),
     path('customers/<int:pk>/delete/', views.CustomerDeleteView.as_view(), name='customer-delete'),
+    path('customers/<int:pk>/license/', views.customer_combined_license, name='customer-license'),
 
     # Reservations
     path('reservations/', views.ReservationListView.as_view(), name='reservation-list'),

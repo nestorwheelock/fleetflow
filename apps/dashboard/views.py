@@ -176,7 +176,7 @@ class CustomerCreateView(LoginRequiredMixin, TenantMixin, CreateView):
     model = Customer
     template_name = 'dashboard/customers/form.html'
     fields = ['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'state', 'zip_code',
-              'license_number', 'license_state', 'license_expiry']
+              'license_number', 'license_state', 'license_expiry', 'license_image_front', 'license_image_back']
 
     def form_valid(self, form):
         form.instance.tenant = self.request.tenant
@@ -191,7 +191,7 @@ class CustomerUpdateView(LoginRequiredMixin, TenantMixin, UpdateView):
     model = Customer
     template_name = 'dashboard/customers/form.html'
     fields = ['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'state', 'zip_code',
-              'license_number', 'license_state', 'license_expiry']
+              'license_number', 'license_state', 'license_expiry', 'license_image_front', 'license_image_back']
 
     def form_valid(self, form):
         messages.success(self.request, 'Customer updated successfully.')
@@ -548,3 +548,44 @@ class QuickActionVehicleStatusAPI(APIView):
         vehicle.status = new_status
         vehicle.save(update_fields=['status', 'updated_at'])
         return Response({'status': vehicle.status})
+
+
+@login_required
+def customer_combined_license(request, pk):
+    """Generate a combined image with license front on top, back on bottom."""
+    from PIL import Image
+    from io import BytesIO
+    from django.http import HttpResponse, Http404
+
+    customer = get_object_or_404(Customer, pk=pk, tenant=request.tenant)
+
+    if not customer.license_image_front or not customer.license_image_back:
+        raise Http404("License images not available")
+
+    # Open both images
+    front_img = Image.open(customer.license_image_front.path)
+    back_img = Image.open(customer.license_image_back.path)
+
+    # Resize both to same width, maintaining aspect ratio
+    target_width = max(front_img.width, back_img.width)
+
+    if front_img.width != target_width:
+        ratio = target_width / front_img.width
+        front_img = front_img.resize((target_width, int(front_img.height * ratio)), Image.Resampling.LANCZOS)
+
+    if back_img.width != target_width:
+        ratio = target_width / back_img.width
+        back_img = back_img.resize((target_width, int(back_img.height * ratio)), Image.Resampling.LANCZOS)
+
+    # Create combined image (front on top, back on bottom)
+    combined_height = front_img.height + back_img.height
+    combined_img = Image.new('RGB', (target_width, combined_height), 'white')
+    combined_img.paste(front_img, (0, 0))
+    combined_img.paste(back_img, (0, front_img.height))
+
+    # Save to buffer
+    buffer = BytesIO()
+    combined_img.save(buffer, format='JPEG', quality=90)
+    buffer.seek(0)
+
+    return HttpResponse(buffer.getvalue(), content_type='image/jpeg')

@@ -221,3 +221,101 @@ class TestVehicleDelete:
         client.force_login(tenant_user.user)
         response = client.get(f'/dashboard/vehicles/{vehicle.pk}/')
         assert b'delete' in response.content.lower()
+
+
+class TestCustomerLicenseUpload:
+    """Tests for customer driver's license image upload"""
+
+    def test_customer_form_has_license_upload_fields(self, client, tenant_user):
+        """Customer form should have file upload fields for license images"""
+        client.force_login(tenant_user.user)
+        response = client.get('/dashboard/customers/create/')
+        assert b'license_image_front' in response.content
+        assert b'license_image_back' in response.content
+        assert b'enctype="multipart/form-data"' in response.content
+
+    def test_customer_form_accepts_license_images(self, client, tenant_user):
+        """Customer create should accept license image uploads"""
+        from io import BytesIO
+        from PIL import Image
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        client.force_login(tenant_user.user)
+
+        # Create test images
+        def create_test_image(name):
+            img = Image.new('RGB', (100, 100), color='red')
+            buffer = BytesIO()
+            img.save(buffer, format='JPEG')
+            buffer.seek(0)
+            return SimpleUploadedFile(name, buffer.read(), content_type='image/jpeg')
+
+        front_image = create_test_image('license_front.jpg')
+        back_image = create_test_image('license_back.jpg')
+
+        data = {
+            'first_name': 'License',
+            'last_name': 'Test',
+            'email': 'license.test@example.com',
+            'phone': '555-9999',
+            'license_image_front': front_image,
+            'license_image_back': back_image,
+        }
+        response = client.post('/dashboard/customers/create/', data)
+        assert response.status_code == 302  # Redirect on success
+
+        from apps.customers.models import Customer
+        customer = Customer.objects.get(email='license.test@example.com')
+        assert customer.license_image_front
+        assert customer.license_image_back
+
+    def test_customer_detail_shows_license_images(self, client, tenant_user, customer):
+        """Customer detail page should show license images if uploaded"""
+        from io import BytesIO
+        from PIL import Image
+        from django.core.files.base import ContentFile
+
+        client.force_login(tenant_user.user)
+
+        # Add test images to customer
+        img = Image.new('RGB', (100, 100), color='blue')
+        buffer = BytesIO()
+        img.save(buffer, format='JPEG')
+        customer.license_image_front.save('front.jpg', ContentFile(buffer.getvalue()))
+
+        buffer.seek(0)
+        customer.license_image_back.save('back.jpg', ContentFile(buffer.getvalue()))
+        customer.save()
+
+        response = client.get(f'/dashboard/customers/{customer.pk}/')
+        assert response.status_code == 200
+        # Check for license images section or view link
+        assert b'license' in response.content.lower()
+
+    def test_combined_license_view_accessible(self, client, tenant_user, customer):
+        """Combined license view should be accessible for customers with images"""
+        from io import BytesIO
+        from PIL import Image
+        from django.core.files.base import ContentFile
+
+        client.force_login(tenant_user.user)
+
+        # Add test images to customer
+        img = Image.new('RGB', (100, 100), color='green')
+        buffer = BytesIO()
+        img.save(buffer, format='JPEG')
+        customer.license_image_front.save('front.jpg', ContentFile(buffer.getvalue()))
+
+        buffer.seek(0)
+        customer.license_image_back.save('back.jpg', ContentFile(buffer.getvalue()))
+        customer.save()
+
+        response = client.get(f'/dashboard/customers/{customer.pk}/license/')
+        assert response.status_code == 200
+        assert response['Content-Type'] == 'image/jpeg'
+
+    def test_combined_license_returns_404_without_images(self, client, tenant_user, customer):
+        """Combined license view should return 404 if no images uploaded"""
+        client.force_login(tenant_user.user)
+        response = client.get(f'/dashboard/customers/{customer.pk}/license/')
+        assert response.status_code == 404
