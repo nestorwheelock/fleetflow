@@ -10,8 +10,8 @@
 
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)]()
 [![Status](https://img.shields.io/badge/status-Epoch%201%20Complete-green.svg)]()
-[![Tests](https://img.shields.io/badge/tests-181%20passing-brightgreen.svg)]()
-[![Coverage](https://img.shields.io/badge/coverage-91%25-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-368%20passing-brightgreen.svg)]()
+[![Coverage](https://img.shields.io/badge/coverage-87%25-brightgreen.svg)]()
 
 ---
 
@@ -58,14 +58,29 @@ open http://localhost:9199/admin
 ### Test Coverage
 
 ```
-181 tests passing | 91% overall coverage
+368 tests passing | 87% overall coverage
 ├── tenants:      96%
 ├── reservations: 97%
 ├── fleet:        73-96%
 ├── customers:    74-97%
 ├── contracts:    87-93%
+├── automation:   100% (OCR parsers)
 └── dashboard:    85%
 ```
+
+### AI-Powered Automation
+
+FleetFlow includes AI-powered document and image analysis:
+
+| Feature | Description | Plan |
+|---------|-------------|------|
+| **License OCR** | Extract driver's license data | Professional+ |
+| **Insurance OCR** | Parse insurance card details | Professional+ |
+| **Damage Detection** | AI identifies scratches, dents, cracks from photos | Professional+ |
+| **Dashboard Analysis** | Extract mileage, fuel level, warning lights | Professional+ |
+| **Damage Comparison** | Compare checkout/checkin photos for new damage | Business+ |
+
+**Portable Design**: The OCR module (`apps/automation/ocr/`) has no Django dependencies and can be extracted for use in other vehicle inspection applications.
 
 ---
 
@@ -95,7 +110,7 @@ open http://localhost:9199/admin
 fleetflow/
 ├── apps/                       # Django applications
 │   ├── tenants/               # Multi-tenant core
-│   │   ├── models.py          # Tenant, TenantUser
+│   │   ├── models.py          # Tenant, TenantUser, ActivityLog
 │   │   ├── middleware.py      # Tenant context injection
 │   │   ├── mixins.py          # TenantViewMixin
 │   │   └── views.py           # Tenant API
@@ -110,12 +125,18 @@ fleetflow/
 │   │   ├── models.py          # Reservation, ReservationExtra
 │   │   └── views.py           # Calendar, availability, check-in/out
 │   ├── contracts/             # Contract generation
-│   │   ├── models.py          # Contract, ConditionReport
+│   │   ├── models.py          # Contract, ConditionReport, InspectionAnalysis
 │   │   └── views.py           # PDF generation, signatures
+│   ├── automation/            # AI-powered features (portable)
+│   │   └── ocr/               # Document/image analysis
+│   │       ├── client.py      # OpenRouter API client
+│   │       ├── parsers/       # License, Insurance, Damage, Dashboard
+│   │       ├── schemas/       # Pydantic response models
+│   │       └── prompts/       # AI prompts
 │   └── dashboard/             # Staff interface
 │       └── views.py           # Dashboard, quick actions
 ├── templates/                  # Tailwind CSS templates
-├── tests/                      # 181 pytest tests
+├── tests/                      # 368 pytest tests
 ├── config/                     # Django settings
 │   ├── settings/
 │   │   ├── base.py            # Common settings
@@ -193,6 +214,16 @@ fleetflow/
 - `POST /api/dashboard/quick-actions/new-reservation/` - Quick reservation
 - `POST /api/dashboard/quick-actions/new-customer/` - Quick customer
 - `POST /api/dashboard/quick-actions/vehicle-status/` - Quick status change
+
+### Activity Log
+- `GET /dashboard/activity/` - View activity log (web UI)
+
+### Automation (AI)
+- `POST /api/automation/parse-license/{customer_id}/` - Parse driver's license
+- `POST /api/automation/parse-insurance/{customer_id}/` - Parse insurance card
+- `POST /api/condition-reports/{id}/analyze-photo/{photo_id}/` - Analyze photo for damage
+- `POST /api/condition-reports/{id}/analyze-dashboard/` - Analyze dashboard image
+- `POST /api/condition-reports/{id}/compare/` - Compare checkout/checkin photos
 
 ---
 
