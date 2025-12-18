@@ -341,3 +341,127 @@ class TestActivityLogHelper:
 
         assert log is not None
         assert log.changes == changes
+
+
+@pytest.mark.django_db
+class TestPhotoUploadAuditLogging:
+    """Tests for B-005: Photo upload audit logging.
+
+    These tests verify that photo uploads are properly logged
+    in the ActivityLog for audit purposes.
+    """
+
+    def test_vehicle_photo_upload_creates_activity_log(self, tenant, user, vehicle):
+        """Test that uploading a vehicle photo creates an activity log entry.
+
+        B-005: This test should FAIL until the bug is fixed.
+        Photo uploads should be logged with action 'upload'.
+        """
+        from apps.tenants.models import ActivityLog
+        from apps.fleet.models import VehiclePhoto
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from django.test import RequestFactory
+        from apps.dashboard.views import vehicle_photo_upload
+        from io import BytesIO
+        from PIL import Image
+
+        # Create request factory
+        factory = RequestFactory()
+
+        # Create a simple test image
+        image = Image.new('RGB', (100, 100), color='red')
+        image_io = BytesIO()
+        image.save(image_io, format='JPEG')
+        image_io.seek(0)
+
+        test_image = SimpleUploadedFile(
+            name='test_photo.jpg',
+            content=image_io.read(),
+            content_type='image/jpeg'
+        )
+
+        # Create POST request
+        request = factory.post(
+            f'/dashboard/vehicles/{vehicle.pk}/photos/upload/',
+        )
+        request.FILES.setlist('photos', [test_image])
+        request.user = user
+        request.tenant = tenant
+
+        # Call the view directly
+        response = vehicle_photo_upload(request, vehicle.pk)
+
+        # Check the upload succeeded
+        assert response.status_code == 200
+
+        # Verify photo was created
+        assert VehiclePhoto.objects.filter(vehicle=vehicle).exists()
+
+        # B-005: Check that an activity log was created for this upload
+        # This assertion should FAIL until the bug is fixed
+        log = ActivityLog.objects.filter(
+            tenant=tenant,
+            model_name='VehiclePhoto',
+            action='upload',
+        ).first()
+
+        assert log is not None, "Photo upload should create an ActivityLog entry"
+        assert log.user == user
+        assert log.action == 'upload'
+
+    def test_vehicle_photo_delete_creates_activity_log(self, tenant, user, vehicle):
+        """Test that deleting a vehicle photo creates an activity log entry.
+
+        B-005: This test should FAIL until the bug is fixed.
+        """
+        from apps.tenants.models import ActivityLog
+        from apps.fleet.models import VehiclePhoto
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from django.test import RequestFactory
+        from apps.dashboard.views import vehicle_photo_delete
+        from io import BytesIO
+        from PIL import Image
+
+        factory = RequestFactory()
+
+        # Create a photo to delete
+        image = Image.new('RGB', (100, 100), color='blue')
+        image_io = BytesIO()
+        image.save(image_io, format='JPEG')
+        image_io.seek(0)
+
+        photo = VehiclePhoto.objects.create(
+            vehicle=vehicle,
+            image=SimpleUploadedFile(
+                name='test_delete.jpg',
+                content=image_io.read(),
+                content_type='image/jpeg'
+            ),
+        )
+        photo_pk = photo.pk
+
+        # Create POST request for delete
+        request = factory.post(
+            f'/dashboard/vehicles/{vehicle.pk}/photos/{photo_pk}/delete/',
+        )
+        request.user = user
+        request.tenant = tenant
+
+        # Call the view directly
+        response = vehicle_photo_delete(request, vehicle.pk, photo_pk)
+
+        assert response.status_code == 200
+
+        # Verify photo was deleted
+        assert not VehiclePhoto.objects.filter(pk=photo_pk).exists()
+
+        # B-005: Check that an activity log was created for this delete
+        log = ActivityLog.objects.filter(
+            tenant=tenant,
+            model_name='VehiclePhoto',
+            action='delete',
+        ).first()
+
+        assert log is not None, "Photo delete should create an ActivityLog entry"
+        assert log.user == user
+        assert log.action == 'delete'
