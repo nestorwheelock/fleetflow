@@ -93,7 +93,7 @@ class VehicleListView(LoginRequiredMixin, TenantMixin, ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        qs = super().get_queryset()
+        qs = super().get_queryset().prefetch_related('photos')
         status_filter = self.request.GET.get('status')
         if status_filter:
             qs = qs.filter(status=status_filter)
