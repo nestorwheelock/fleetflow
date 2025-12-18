@@ -64,3 +64,28 @@ The calendar template (`templates/dashboard/reservations/calendar.html`) does no
 - `templates/dashboard/reservations/calendar.html` - Needs FullCalendar integration
 - `apps/reservations/views.py` - Calendar API view exists
 - `apps/dashboard/views.py` - Calendar template view
+
+## Resolution
+
+**Status**: Fixed
+**Fixed Date**: December 2025
+
+### Changes Made
+
+1. **Updated `templates/dashboard/reservations/calendar.html`**:
+   - Added FullCalendar v6.1.10 from CDN
+   - Initialized calendar with month/week/list views
+   - Connected to `/api/reservations/calendar/` API endpoint
+   - Added event click handler with modal popup for reservation details
+   - Styled with Tailwind CSS to match FleetFlow design
+   - Added status color legend (Pending, Confirmed, Checked Out, Completed)
+   - Added keyboard (Escape) and backdrop click handlers to close modal
+
+2. **Tests Added in `tests/test_crud_views.py`**:
+   - `test_calendar_page_accessible` - Verifies page loads
+   - `test_calendar_page_has_fullcalendar_script` - Checks for FullCalendar CDN/init
+   - `test_calendar_page_has_calendar_div` - Verifies calendar container exists
+   - `test_calendar_api_returns_events` - Tests API endpoint returns data
+   - `test_calendar_api_event_format` - Validates FullCalendar event format
+
+**Tests**: All 210 tests pass at 91% coverage

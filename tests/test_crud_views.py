@@ -1,9 +1,55 @@
 """
 Tests for missing CRUD operations - B-003
+Tests for FullCalendar integration - B-002
 """
 import pytest
 from datetime import date, timedelta
 from django.urls import reverse
+
+
+class TestCalendarView:
+    """Tests for FullCalendar integration - B-002"""
+
+    def test_calendar_page_accessible(self, client, tenant_user):
+        """Calendar page should be accessible"""
+        client.force_login(tenant_user.user)
+        response = client.get('/dashboard/reservations/calendar/')
+        assert response.status_code == 200
+
+    def test_calendar_page_has_fullcalendar_script(self, client, tenant_user):
+        """Calendar page should include FullCalendar library script"""
+        client.force_login(tenant_user.user)
+        response = client.get('/dashboard/reservations/calendar/')
+        # Check for FullCalendar CDN script tag
+        assert b'cdn.jsdelivr.net/npm/fullcalendar' in response.content or b'fullcalendar' in response.content.lower()
+        # Check for calendar initialization
+        assert b'FullCalendar.Calendar' in response.content or b'new Calendar' in response.content
+
+    def test_calendar_page_has_calendar_div(self, client, tenant_user):
+        """Calendar page should have calendar container"""
+        client.force_login(tenant_user.user)
+        response = client.get('/dashboard/reservations/calendar/')
+        assert b'id="calendar"' in response.content
+
+    def test_calendar_api_returns_events(self, tenant_client, reservation):
+        """Calendar API should return reservation events"""
+        client, tenant = tenant_client
+        response = client.get('/api/reservations/calendar/')
+        assert response.status_code == 200
+        assert isinstance(response.data, list)
+
+    def test_calendar_api_event_format(self, tenant_client, reservation):
+        """Calendar API should return FullCalendar compatible format"""
+        client, tenant = tenant_client
+        response = client.get('/api/reservations/calendar/')
+        assert response.status_code == 200
+        if len(response.data) > 0:
+            event = response.data[0]
+            assert 'id' in event
+            assert 'title' in event
+            assert 'start' in event
+            assert 'end' in event
+            assert 'color' in event
 
 
 class TestCustomerCRUD:

@@ -2,16 +2,169 @@
 
 {% block title %}Reservation Calendar - FleetFlow{% endblock %}
 
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+<style>
+    .fc-event {
+        cursor: pointer;
+    }
+    .fc-toolbar-title {
+        font-size: 1.25rem !important;
+    }
+    .fc-daygrid-event {
+        white-space: normal;
+        padding: 2px 4px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="mb-8">
-    <a href="/dashboard/reservations/" class="text-blue-600 hover:underline">&larr; Back to Reservations</a>
-    <h1 class="text-3xl font-bold text-gray-900 mt-2">Reservation Calendar</h1>
+<div class="flex justify-between items-center mb-8">
+    <div>
+        <a href="/dashboard/reservations/" class="text-blue-600 hover:underline">&larr; Back to Reservations</a>
+        <h1 class="text-3xl font-bold text-gray-900 mt-2">Reservation Calendar</h1>
+    </div>
+    <a href="/dashboard/reservations/create/" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        New Reservation
+    </a>
 </div>
 
 <div class="bg-white rounded-lg shadow p-6">
-    <div id="calendar" class="min-h-96">
-        <p class="text-gray-500">Calendar view requires FullCalendar JS library.</p>
-        <p class="text-gray-500 mt-2">API endpoint: /api/reservations/calendar/</p>
+    <div class="mb-4 flex items-center space-x-4 text-sm">
+        <span class="flex items-center"><span class="w-3 h-3 rounded mr-1" style="background-color: #fbbf24;"></span> Pending</span>
+        <span class="flex items-center"><span class="w-3 h-3 rounded mr-1" style="background-color: #3b82f6;"></span> Confirmed</span>
+        <span class="flex items-center"><span class="w-3 h-3 rounded mr-1" style="background-color: #22c55e;"></span> Checked Out</span>
+        <span class="flex items-center"><span class="w-3 h-3 rounded mr-1" style="background-color: #6b7280;"></span> Completed</span>
+    </div>
+    <div id="calendar"></div>
+</div>
+
+<!-- Reservation Details Modal -->
+<div id="event-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold" id="modal-title">Reservation Details</h3>
+            <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div id="modal-content" class="space-y-3">
+            <!-- Content populated by JavaScript -->
+        </div>
+        <div class="mt-6 flex justify-end space-x-2">
+            <button onclick="closeModal()" class="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50">
+                Close
+            </button>
+            <a id="modal-view-link" href="#" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                View Details
+            </a>
+        </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,listWeek'
+        },
+        events: function(info, successCallback, failureCallback) {
+            fetch('/api/reservations/calendar/?start=' + info.startStr + '&end=' + info.endStr, {
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                successCallback(data);
+            })
+            .catch(error => {
+                console.error('Error fetching events:', error);
+                failureCallback(error);
+            });
+        },
+        eventClick: function(info) {
+            showEventDetails(info.event);
+        },
+        eventDisplay: 'block',
+        dayMaxEvents: 3,
+        moreLinkClick: 'popover',
+        height: 'auto',
+        aspectRatio: 1.8,
+    });
+
+    calendar.render();
+});
+
+function showEventDetails(event) {
+    var modal = document.getElementById('event-modal');
+    var title = document.getElementById('modal-title');
+    var content = document.getElementById('modal-content');
+    var viewLink = document.getElementById('modal-view-link');
+
+    title.textContent = event.title;
+
+    var statusColors = {
+        'pending': 'bg-yellow-100 text-yellow-800',
+        'confirmed': 'bg-blue-100 text-blue-800',
+        'checked_out': 'bg-green-100 text-green-800',
+        'completed': 'bg-gray-100 text-gray-800',
+        'cancelled': 'bg-red-100 text-red-800'
+    };
+
+    var statusClass = statusColors[event.extendedProps.status] || 'bg-gray-100 text-gray-800';
+    var statusDisplay = event.extendedProps.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+    content.innerHTML = `
+        <div>
+            <span class="text-sm text-gray-500">Status</span>
+            <div><span class="px-2 py-1 rounded text-sm font-medium ${statusClass}">${statusDisplay}</span></div>
+        </div>
+        <div>
+            <span class="text-sm text-gray-500">Dates</span>
+            <div class="font-medium">${formatDate(event.start)} - ${formatDate(event.end)}</div>
+        </div>
+    `;
+
+    viewLink.href = '/dashboard/reservations/' + event.id + '/';
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeModal() {
+    var modal = document.getElementById('event-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+function formatDate(date) {
+    if (!date) return 'N/A';
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+
+// Close modal on backdrop click
+document.getElementById('event-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+</script>
 {% endblock %}
