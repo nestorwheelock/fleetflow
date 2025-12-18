@@ -252,16 +252,30 @@ class ConditionReport(models.Model):
 
 
 class ConditionReportPhoto(models.Model):
+    """
+    Photo attached to a condition report.
+
+    Portability Note: This model stores photos for vehicle inspections.
+    The LOCATION_CHOICES and SUBMITTED_BY_CHOICES can be reused in any
+    vehicle inspection context (personal vehicles, fleet management, etc.)
+    """
     LOCATION_CHOICES = [
         ('front', 'Front'),
         ('back', 'Back'),
-        ('left', 'Left Side'),
-        ('right', 'Right Side'),
-        ('interior', 'Interior'),
-        ('dashboard', 'Dashboard'),
+        ('driver_side', 'Driver Side'),
+        ('passenger_side', 'Passenger Side'),
+        ('interior_front', 'Interior Front'),
+        ('interior_back', 'Interior Back'),
+        ('dashboard', 'Dashboard/Odometer'),
         ('trunk', 'Trunk'),
-        ('damage', 'Damage Detail'),
+        ('damage_detail', 'Damage Detail'),
+        ('customer_submitted', 'Customer Submitted'),
         ('other', 'Other'),
+    ]
+
+    SUBMITTED_BY_CHOICES = [
+        ('staff', 'Staff'),
+        ('customer', 'Customer'),
     ]
 
     condition_report = models.ForeignKey(
@@ -271,7 +285,12 @@ class ConditionReportPhoto(models.Model):
     )
     image = models.ImageField(upload_to='condition_reports/')
     location = models.CharField(max_length=20, choices=LOCATION_CHOICES)
-    description = models.CharField(max_length=200, blank=True)
+    submitted_by = models.CharField(
+        max_length=10,
+        choices=SUBMITTED_BY_CHOICES,
+        default='staff'
+    )
+    description = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -279,3 +298,149 @@ class ConditionReportPhoto(models.Model):
 
     def __str__(self):
         return f'{self.get_location_display()} - {self.condition_report}'
+
+
+class InspectionAnalysis(models.Model):
+    """
+    Stores AI analysis results for inspection photos.
+
+    Portability Note: This model is designed to be reusable across different
+    vehicle management contexts. It stores AI-generated analysis results
+    independent of the rental business logic.
+
+    Analysis Types:
+    - damage_detection: AI identifies scratches, dents, cracks, etc.
+    - dashboard_analysis: AI reads mileage, fuel, warning lights
+    - comparison: AI compares before/after photos
+    """
+    ANALYSIS_TYPE_CHOICES = [
+        ('damage_detection', 'Damage Detection'),
+        ('dashboard_analysis', 'Dashboard Analysis'),
+        ('comparison', 'Comparison Analysis'),
+    ]
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('processing', 'Processing'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+    ]
+
+    condition_report = models.ForeignKey(
+        ConditionReport,
+        on_delete=models.CASCADE,
+        related_name='analyses'
+    )
+    photo = models.ForeignKey(
+        ConditionReportPhoto,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='analyses'
+    )
+    analysis_type = models.CharField(max_length=20, choices=ANALYSIS_TYPE_CHOICES)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+
+    result = models.JSONField(default=dict, blank=True)
+    confidence = models.FloatField(null=True, blank=True)
+    error_message = models.TextField(blank=True)
+
+    model_used = models.CharField(max_length=100, blank=True)
+    processing_time_ms = models.IntegerField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name_plural = 'Inspection analyses'
+
+    def __str__(self):
+        return f'{self.get_analysis_type_display()} - {self.status}'
+
+    def mark_processing(self):
+        self.status = 'processing'
+        self.save(update_fields=['status'])
+
+    def mark_completed(self, result, confidence=None, model_used=None, processing_time_ms=None):
+        self.status = 'completed'
+        self.result = result
+        self.confidence = confidence
+        self.model_used = model_used or ''
+        self.processing_time_ms = processing_time_ms
+        self.completed_at = timezone.now()
+        self.save()
+
+    def mark_failed(self, error_message):
+        self.status = 'failed'
+        self.error_message = error_message
+        self.completed_at = timezone.now()
+        self.save(update_fields=['status', 'error_message', 'completed_at'])
+
+
+class DamageComparison(models.Model):
+    """
+    Stores comparison results between checkout and checkin condition reports.
+
+    Portability Note: This model compares two inspections of the same vehicle
+    to identify new damage. Useful in any context where before/after vehicle
+    condition needs to be tracked (rentals, fleet returns, personal use, etc.)
+    """
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('processing', 'Processing'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+    ]
+
+    checkout_report = models.ForeignKey(
+        ConditionReport,
+        on_delete=models.CASCADE,
+        related_name='comparisons_as_checkout'
+    )
+    checkin_report = models.ForeignKey(
+        ConditionReport,
+        on_delete=models.CASCADE,
+        related_name='comparisons_as_checkin'
+    )
+
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    new_damages = models.JSONField(default=list, blank=True)
+    resolved_damages = models.JSONField(default=list, blank=True)
+    summary = models.TextField(blank=True)
+
+    total_new_damage_count = models.IntegerField(default=0)
+    estimated_repair_cost = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True
+    )
+
+    error_message = models.TextField(blank=True)
+    model_used = models.CharField(max_length=100, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name_plural = 'Damage comparisons'
+
+    def __str__(self):
+        return f'Comparison: {self.checkout_report} vs {self.checkin_report}'
+
+    def mark_completed(self, new_damages, summary, total_count=None, estimated_cost=None):
+        self.status = 'completed'
+        self.new_damages = new_damages
+        self.summary = summary
+        self.total_new_damage_count = total_count or len(new_damages)
+        self.estimated_repair_cost = estimated_cost
+        self.completed_at = timezone.now()
+        self.save()
+
+    def mark_failed(self, error_message):
+        self.status = 'failed'
+        self.error_message = error_message
+        self.completed_at = timezone.now()
+        self.save(update_fields=['status', 'error_message', 'completed_at'])
