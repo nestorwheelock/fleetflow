@@ -166,6 +166,61 @@ class OpenRouterClient:
             ],
         }
 
+    def _build_multi_image_payload(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        images: list[dict],
+        model: str,
+        max_tokens: int = 4096,
+        temperature: float = 0.1,
+    ) -> dict:
+        """Build the API payload for a multi-image vision request.
+
+        Args:
+            system_prompt: System prompt for the model
+            user_prompt: User prompt for the model
+            images: List of dicts with 'data' (bytes) and 'media_type' (str) keys
+            model: Model to use for the request
+            max_tokens: Maximum tokens in response
+            temperature: Model temperature
+
+        Returns:
+            API payload dictionary
+        """
+        content = []
+
+        for image in images:
+            image_base64 = encode_image_base64(image['data'])
+            media_type = image.get('media_type', 'image/jpeg')
+            content.append({
+                'type': 'image_url',
+                'image_url': {
+                    'url': f'data:{media_type};base64,{image_base64}',
+                },
+            })
+
+        content.append({
+            'type': 'text',
+            'text': user_prompt,
+        })
+
+        return {
+            'model': model or self.model,
+            'max_tokens': max_tokens,
+            'temperature': temperature,
+            'messages': [
+                {
+                    'role': 'system',
+                    'content': system_prompt,
+                },
+                {
+                    'role': 'user',
+                    'content': content,
+                },
+            ],
+        }
+
     def _handle_error_response(self, response: httpx.Response) -> None:
         """Handle error responses from the API."""
         try:
@@ -261,6 +316,124 @@ class OpenRouterClient:
         return VisionResponse(
             content=data['choices'][0]['message']['content'],
             model=data.get('model', request.model),
+            usage=data.get('usage', {}),
+            raw_response=data,
+        )
+
+    def send_multi_image_request(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        images: list[dict],
+        model: str | None = None,
+        max_tokens: int = 4096,
+        temperature: float = 0.1,
+    ) -> VisionResponse:
+        """Send a synchronous multi-image vision request to the API.
+
+        Portability Note: This method is designed for comparison tasks that require
+        analyzing multiple images together (e.g., before/after comparison).
+
+        Args:
+            system_prompt: System prompt for the model
+            user_prompt: User prompt for the model
+            images: List of dicts with 'data' (bytes) and 'media_type' (str) keys
+            model: Optional model override
+            max_tokens: Maximum tokens in response
+            temperature: Model temperature
+
+        Returns:
+            VisionResponse object with the API response
+
+        Raises:
+            OpenRouterAuthError: If authentication fails
+            OpenRouterRateLimitError: If rate limit is exceeded
+            OpenRouterAPIError: For other API errors
+        """
+        headers = self._build_headers()
+        payload = self._build_multi_image_payload(
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
+            images=images,
+            model=model or self.model,
+            max_tokens=max_tokens,
+            temperature=temperature,
+        )
+
+        with httpx.Client(timeout=self.timeout) as client:
+            response = client.post(
+                OPENROUTER_API_URL,
+                headers=headers,
+                json=payload,
+            )
+
+        if response.status_code != 200:
+            self._handle_error_response(response)
+
+        data = response.json()
+
+        return VisionResponse(
+            content=data['choices'][0]['message']['content'],
+            model=data.get('model', model or self.model),
+            usage=data.get('usage', {}),
+            raw_response=data,
+        )
+
+    async def send_multi_image_request_async(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        images: list[dict],
+        model: str | None = None,
+        max_tokens: int = 4096,
+        temperature: float = 0.1,
+    ) -> VisionResponse:
+        """Send an asynchronous multi-image vision request to the API.
+
+        Portability Note: This method is designed for comparison tasks that require
+        analyzing multiple images together (e.g., before/after comparison).
+
+        Args:
+            system_prompt: System prompt for the model
+            user_prompt: User prompt for the model
+            images: List of dicts with 'data' (bytes) and 'media_type' (str) keys
+            model: Optional model override
+            max_tokens: Maximum tokens in response
+            temperature: Model temperature
+
+        Returns:
+            VisionResponse object with the API response
+
+        Raises:
+            OpenRouterAuthError: If authentication fails
+            OpenRouterRateLimitError: If rate limit is exceeded
+            OpenRouterAPIError: For other API errors
+        """
+        headers = self._build_headers()
+        payload = self._build_multi_image_payload(
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
+            images=images,
+            model=model or self.model,
+            max_tokens=max_tokens,
+            temperature=temperature,
+        )
+
+        async with httpx.AsyncClient(timeout=self.timeout) as client:
+            response = await client.post(
+                OPENROUTER_API_URL,
+                headers=headers,
+                json=payload,
+            )
+
+        if response.status_code != 200:
+            self._handle_error_response(response)
+
+        data = response.json()
+
+        return VisionResponse(
+            content=data['choices'][0]['message']['content'],
+            model=data.get('model', model or self.model),
             usage=data.get('usage', {}),
             raw_response=data,
         )
