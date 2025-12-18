@@ -1,8 +1,9 @@
 from django.db import models
+from django.conf import settings
 from django.core.validators import MinValueValidator
 from decimal import Decimal
 
-from apps.tenants.models import TenantModel
+from apps.tenants.models import TenantModel, AuditMixin
 
 
 class VehicleCategory(TenantModel):
@@ -19,7 +20,7 @@ class VehicleCategory(TenantModel):
         return self.name
 
 
-class Vehicle(TenantModel):
+class Vehicle(TenantModel, AuditMixin):
     STATUS_CHOICES = [
         ('available', 'Available'),
         ('rented', 'Rented'),

@@ -1,11 +1,12 @@
 from django.db import models
+from django.conf import settings
 from django.core.validators import EmailValidator
 from datetime import date
 
-from apps.tenants.models import TenantModel
+from apps.tenants.models import TenantModel, AuditMixin
 
 
-class Customer(TenantModel):
+class Customer(TenantModel, AuditMixin):
     PHOTO_SOURCE_CHOICES = [
         ('license', 'From License'),
         ('upload', 'Manual Upload'),

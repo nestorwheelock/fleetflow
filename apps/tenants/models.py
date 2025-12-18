@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.contrib.contenttypes.models import ContentType
 
 
 class Tenant(models.Model):
@@ -223,3 +224,80 @@ class TenantSettings(models.Model):
         """Increment the OCR request counter."""
         self.ocr_requests_today += 1
         self.save(update_fields=['ocr_requests_today'])
+
+
+class AuditMixin(models.Model):
+    """Mixin to add audit fields to models."""
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='%(class)s_created',
+    )
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='%(class)s_updated',
+    )
+
+    class Meta:
+        abstract = True
+
+
+class ActivityLog(models.Model):
+    """Track all user actions in the system for audit purposes."""
+
+    ACTION_CHOICES = [
+        ('create', 'Create'),
+        ('update', 'Update'),
+        ('delete', 'Delete'),
+        ('checkout', 'Checkout'),
+        ('checkin', 'Check-in'),
+        ('status_change', 'Status Change'),
+    ]
+
+    tenant = models.ForeignKey(
+        Tenant,
+        on_delete=models.CASCADE,
+        related_name='activity_logs'
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='activity_logs'
+    )
+    action = models.CharField(max_length=20, choices=ACTION_CHOICES)
+    model_name = models.CharField(max_length=100)
+    object_id = models.PositiveIntegerField()
+    object_repr = models.CharField(max_length=255)
+    changes = models.JSONField(blank=True, null=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-timestamp']
+        verbose_name = 'Activity Log'
+        verbose_name_plural = 'Activity Logs'
+
+    def __str__(self):
+        return f'{self.action} {self.model_name} #{self.object_id} by {self.user}'
+
+
+def log_activity(tenant, user, action, instance, changes=None, ip_address=None):
+    """Helper function to create an activity log entry."""
+    return ActivityLog.objects.create(
+        tenant=tenant,
+        user=user,
+        action=action,
+        model_name=instance.__class__.__name__,
+        object_id=instance.pk,
+        object_repr=str(instance)[:255],
+        changes=changes,
+        ip_address=ip_address,
+    )

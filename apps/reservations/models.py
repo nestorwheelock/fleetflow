@@ -1,16 +1,17 @@
 from django.db import models
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.utils import timezone
 from decimal import Decimal
 from datetime import date
 
-from apps.tenants.models import TenantModel
+from apps.tenants.models import TenantModel, AuditMixin
 from apps.fleet.models import Vehicle
 from apps.customers.models import Customer
 
 
-class Reservation(TenantModel):
+class Reservation(TenantModel, AuditMixin):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
@@ -71,6 +72,22 @@ class Reservation(TenantModel):
     actual_checkin_at = models.DateTimeField(null=True, blank=True)
     checkout_mileage = models.PositiveIntegerField(null=True, blank=True)
     checkin_mileage = models.PositiveIntegerField(null=True, blank=True)
+
+    # Track who performed checkout/checkin
+    checkout_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='checkouts_performed'
+    )
+    checkin_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='checkins_performed'
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
