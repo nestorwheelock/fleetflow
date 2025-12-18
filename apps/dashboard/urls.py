@@ -37,6 +37,9 @@ urlpatterns = [
     # Settings
     path('settings/', views.automation_settings, name='settings'),
 
+    # Activity Log
+    path('activity/', views.activity_log, name='activity-log'),
+
     path('api/dashboard/stats/', views.DashboardStatsAPI.as_view(), name='api-dashboard-stats'),
     path('api/dashboard/today/', views.DashboardTodayAPI.as_view(), name='api-dashboard-today'),
     path('api/dashboard/revenue/', views.DashboardRevenueAPI.as_view(), name='api-dashboard-revenue'),

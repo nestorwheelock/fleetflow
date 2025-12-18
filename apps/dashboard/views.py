@@ -661,3 +661,70 @@ def automation_settings(request):
     }
 
     return render(request, 'dashboard/settings/automation.html', context)
+
+
+@login_required
+def activity_log(request):
+    """View activity log for tenant (admin/owner only)."""
+    from apps.tenants.models import ActivityLog
+
+    if not hasattr(request, 'tenant') or not request.tenant:
+        return redirect('/no-tenant/')
+
+    tenant = request.tenant
+    tenant_user = getattr(request, 'tenant_user', None)
+
+    # Only allow owners and managers to view activity log
+    if not tenant_user or tenant_user.role not in ['owner', 'manager']:
+        messages.error(request, 'You do not have permission to view the activity log.')
+        return redirect('/dashboard/')
+
+    # Get filter parameters
+    action_filter = request.GET.get('action', '')
+    model_filter = request.GET.get('model', '')
+    user_filter = request.GET.get('user', '')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+
+    # Build query
+    logs = ActivityLog.objects.filter(tenant=tenant).select_related('user')
+
+    if action_filter:
+        logs = logs.filter(action=action_filter)
+    if model_filter:
+        logs = logs.filter(model_name=model_filter)
+    if user_filter:
+        logs = logs.filter(user_id=user_filter)
+    if date_from:
+        logs = logs.filter(timestamp__date__gte=date_from)
+    if date_to:
+        logs = logs.filter(timestamp__date__lte=date_to)
+
+    # Pagination
+    from django.core.paginator import Paginator
+    paginator = Paginator(logs, 50)
+    page = request.GET.get('page', 1)
+    logs_page = paginator.get_page(page)
+
+    # Get available filter options
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    from apps.tenants.models import TenantUser
+
+    tenant_users = TenantUser.objects.filter(tenant=tenant).select_related('user')
+
+    context = {
+        'logs': logs_page,
+        'actions': ActivityLog.ACTION_CHOICES,
+        'models': ['Vehicle', 'Customer', 'Reservation', 'Contract'],
+        'users': tenant_users,
+        'filters': {
+            'action': action_filter,
+            'model': model_filter,
+            'user': user_filter,
+            'date_from': date_from,
+            'date_to': date_to,
+        },
+    }
+
+    return render(request, 'dashboard/activity/list.html', context)

@@ -29,6 +29,9 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     <span class="text-sm">{{ tenant.business_name }}</span>
+                    {% if tenant_user and tenant_user.role in 'owner manager' %}
+                    <a href="/dashboard/activity/" class="hover:bg-blue-700 px-3 py-2 rounded text-sm">Activity</a>
+                    {% endif %}
                     {% if tenant_user and tenant_user.role == 'owner' %}
                     <a href="/dashboard/settings/" class="hover:bg-blue-700 px-3 py-2 rounded text-sm">Settings</a>
                     {% endif %}
