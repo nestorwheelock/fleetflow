@@ -2,16 +2,52 @@
 
 ## Overview
 
-This directory contains ASCII wireframes for all major screens in the FleetFlow car rental management system. These wireframes serve as visual specifications for the user interface implementation.
+This directory contains ASCII wireframes for all major screens in the FleetFlow car rental management SaaS platform. These wireframes serve as visual specifications for the user interface implementation.
+
+FleetFlow is a **multi-tenant SaaS platform** where each rental company (tenant) gets their own branded subdomain (e.g., `ronsrentals.fleetflow.com`). The wireframes cover:
+- **Platform Admin** (Super Admin) - FleetFlow platform management
+- **Tenant Dashboard** - Rental company staff management
+- **Public Landing Pages** - Customer-facing branded pages
+- **Customer Portal** - Self-service for rental customers
+
+## Multi-Tenant Architecture
+
+### URL Structure
+```
+fleetflow.com/                        → Marketing site / Platform login
+fleetflow.com/admin-platform/         → Super Admin dashboard (purple theme)
+ronsrentals.fleetflow.com/            → Tenant landing page (tenant branding)
+ronsrentals.fleetflow.com/login/      → Tenant login (staff & customers)
+ronsrentals.fleetflow.com/dashboard/  → Tenant staff dashboard
+ronsrentals.fleetflow.com/customer/   → Customer self-service portal
+rentals.ronscompany.com/              → Custom domain (same as subdomain)
+```
+
+### Theme Differentiation
+| Interface | Theme | Primary Color |
+|-----------|-------|---------------|
+| Platform Admin | Purple/Dark | `#4c1d95` |
+| Tenant Dashboard | Tenant Branding | `{{ tenant.branding.primary_color }}` |
+| Public Pages | Tenant Branding | `{{ tenant.branding.primary_color }}` |
+| Customer Portal | Tenant Branding | `{{ tenant.branding.primary_color }}` |
+
+### Tenant Branding CSS Variables
+```css
+:root {
+  --brand-primary: {{ tenant.branding.primary_color|default:'#2563eb' }};
+  --brand-secondary: {{ tenant.branding.secondary_color|default:'#1e40af' }};
+}
+```
 
 ## Design Patterns
 
 ### Colors (Tailwind CSS)
-- **Primary**: Blue (`blue-600`) - Main actions, navigation highlights
+- **Primary**: Blue (`blue-600`) - Main actions, navigation highlights (or tenant brand color)
 - **Success**: Green (`green-500`) - Available, completed, positive states
 - **Warning**: Yellow (`yellow-500`) - Pending, attention needed
 - **Danger**: Red (`red-500`) - Overdue, errors, critical alerts
 - **Neutral**: Gray (`gray-*`) - Backgrounds, borders, secondary text
+- **Platform Admin**: Purple (`purple-900`) - Super admin interface
 
 ### Typography
 - **Headings**: Inter font family, semi-bold/bold weights
@@ -31,18 +67,29 @@ This directory contains ASCII wireframes for all major screens in the FleetFlow 
 
 ## User Flows
 
-### Staff Workflow
-1. Login → Dashboard
+### Platform Super Admin Workflow
+1. Login → Platform Dashboard
+2. Dashboard → Tenant List → Tenant Detail → Impersonate User
+3. Dashboard → Platform Settings → Toggle Features
+4. Tenant Detail → Edit Plan/Limits → Save Changes
+5. Tenant Detail → Suspend/Reactivate Tenant
+
+### Tenant Staff Workflow
+1. Login (subdomain) → Tenant Dashboard
 2. Dashboard → Today's Schedule → Checkout/Checkin
 3. Dashboard → Quick Actions → Create Reservation
 4. Calendar → Click Date → Create Reservation
 5. Vehicle List → Vehicle Detail → Create Reservation
+6. Settings → Branding → Customize Colors/Logo
+7. Settings → Domains → Add Custom Domain
 
-### Customer Self-Service (Epoch 2+)
-1. Browse Vehicles → Select Vehicle → Booking Flow
-2. Booking → Extras → Review → Payment → Confirmation
-3. My Account → My Rentals → View Details
-4. Upcoming Rental → Sign Contract → Ready for Pickup
+### Customer Self-Service (Multi-Tenant)
+1. Visit Landing Page → Browse Vehicles → Register
+2. Register → Upload Documents (License + Insurance) → Await Verification
+3. Documents Verified → Browse Vehicles → Book
+4. Booking → Extras → Review → Payment → Confirmation
+5. My Account → My Bookings → View Details
+6. Upcoming Rental → Sign Contract → Ready for Pickup
 
 ### Mobile App (Epoch 4)
 1. Login → Home Dashboard
@@ -94,6 +141,50 @@ This directory contains ASCII wireframes for all major screens in the FleetFlow 
 | W-025 | Mobile Booking Flow | Native booking screens |
 | W-026 | Mobile Documents | QR code check-in |
 | W-027 | Push Notifications | Notification examples |
+
+### Super Admin Platform (W-028 to W-032)
+| ID | Screen | Description |
+|----|--------|-------------|
+| W-028 | Platform Dashboard | Super admin overview with tenant metrics |
+| W-029 | Tenant List | Searchable tenant list with filters |
+| W-030 | Tenant Detail | Tenant stats, users, activity, edit settings |
+| W-031 | User Impersonation | Impersonate flow with reason input, red banner |
+| W-032 | Platform Settings | Feature toggles (email verification, custom domains) |
+
+**File**: `W-028-to-W-032-super-admin.txt`
+**Theme**: Purple/dark (`#4c1d95`) to distinguish from tenant interfaces
+**Access**: `is_superuser=True` only
+
+### Multi-Tenant Public Pages (W-033)
+| ID | Screen | Description |
+|----|--------|-------------|
+| W-033 | Tenant Landing Page | Public branded landing page per tenant |
+
+**File**: `W-033-tenant-landing-page.txt`
+**Theme**: Tenant branding (colors, logo)
+**URL**: `{subdomain}.fleetflow.com/`
+
+### Tenant Settings & Customer Portal (W-034 to W-036)
+| ID | Screen | Description |
+|----|--------|-------------|
+| W-034 | Customer Document Upload | License and insurance upload with verification workflow |
+| W-035 | Tenant Branding Settings | Logo upload, color pickers, live preview |
+| W-036 | Custom Domain Settings | Add domain, DNS instructions, verification status |
+
+**File**: `W-034-to-W-036-tenant-settings.txt`
+**Theme**: Tenant branding
+**Access**: W-034 (customers), W-035-036 (tenant owners/admins)
+
+## Document Verification States
+
+Used in W-006 (Staff view) and W-034 (Customer view):
+
+| State | Icon | Description |
+|-------|------|-------------|
+| Missing | 🔴 | Required document not uploaded |
+| Pending | 🟡 | Document uploaded, awaiting staff review |
+| Verified | ✓ | Document reviewed and approved |
+| Rejected | ❌ | Document rejected, needs re-upload |
 
 ## Responsive Breakpoints
 

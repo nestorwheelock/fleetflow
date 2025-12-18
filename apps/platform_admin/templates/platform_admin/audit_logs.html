@@ -1,0 +1,105 @@
+{% extends "platform_admin/base.html" %}
+
+{% block title %}Audit Logs{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-white">Audit Logs</h1>
+    <p class="text-gray-400">Platform administration activity history</p>
+</div>
+
+<!-- Filters -->
+<div class="bg-gray-800 border border-gray-700 rounded-lg p-4 mb-6">
+    <form method="get" class="flex flex-wrap gap-4 items-end">
+        <div>
+            <label class="block text-sm text-gray-400 mb-1">Action Type</label>
+            <select name="action" class="px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-platform-500">
+                <option value="">All Actions</option>
+                {% for value, label in action_choices %}
+                <option value="{{ value }}" {% if action_filter == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <button type="submit" class="px-4 py-2 bg-platform-600 text-white rounded hover:bg-platform-700 focus:outline-none">
+                Filter
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Logs Table -->
+<div class="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
+    <table class="w-full">
+        <thead class="bg-gray-900">
+            <tr>
+                <th class="px-4 py-3 text-left text-sm font-medium text-gray-400">Timestamp</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-gray-400">Admin</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-gray-400">Action</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-gray-400">Tenant</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-gray-400">Description</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-700">
+            {% for log in logs %}
+            <tr class="hover:bg-gray-700">
+                <td class="px-4 py-3 text-gray-400 text-sm whitespace-nowrap">
+                    {{ log.timestamp|date:"M d, Y H:i" }}
+                </td>
+                <td class="px-4 py-3 text-gray-300">
+                    {{ log.admin_user.email|default:"System" }}
+                </td>
+                <td class="px-4 py-3">
+                    <span class="px-2 py-1 text-xs rounded-full
+                        {% if 'suspend' in log.action %}bg-red-900 text-red-300
+                        {% elif 'reactivate' in log.action %}bg-green-900 text-green-300
+                        {% elif 'create' in log.action %}bg-blue-900 text-blue-300
+                        {% elif 'update' in log.action %}bg-yellow-900 text-yellow-300
+                        {% elif 'impersonate' in log.action %}bg-purple-900 text-purple-300
+                        {% else %}bg-gray-700 text-gray-300{% endif %}">
+                        {{ log.get_action_display }}
+                    </span>
+                </td>
+                <td class="px-4 py-3 text-gray-300">
+                    {% if log.tenant %}
+                    <a href="{% url 'platform_admin:tenant_detail' log.tenant.pk %}" class="text-platform-400 hover:text-platform-300">
+                        {{ log.tenant.name }}
+                    </a>
+                    {% else %}
+                    <span class="text-gray-500">-</span>
+                    {% endif %}
+                </td>
+                <td class="px-4 py-3 text-gray-400 text-sm">
+                    {{ log.description|truncatewords:15 }}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                    No audit logs found
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+{% if page_obj.has_other_pages %}
+<div class="mt-4 flex items-center justify-center space-x-2">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}{% if action_filter %}&action={{ action_filter }}{% endif %}"
+       class="px-3 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600">Previous</a>
+    {% endif %}
+
+    <span class="text-gray-400">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}{% if action_filter %}&action={{ action_filter }}{% endif %}"
+       class="px-3 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600">Next</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

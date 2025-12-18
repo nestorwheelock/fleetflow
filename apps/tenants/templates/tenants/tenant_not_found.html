@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Not Found - FleetFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full mx-4">
+        <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+            <div class="mb-6">
+                <svg class="w-16 h-16 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+            </div>
+
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">Tenant Not Found</h1>
+
+            <p class="text-gray-600 mb-6">
+                The rental company "<span class="font-medium text-gray-800">{{ subdomain }}</span>" could not be found.
+            </p>
+
+            <div class="bg-gray-50 rounded-lg p-4 mb-6 text-sm text-gray-600">
+                <p class="mb-2">This could mean:</p>
+                <ul class="list-disc list-inside text-left space-y-1">
+                    <li>The URL is incorrect</li>
+                    <li>The company has not registered yet</li>
+                    <li>The company's account has been suspended</li>
+                </ul>
+            </div>
+
+            <div class="space-y-3">
+                <a href="/"
+                   class="block w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+                    Go to FleetFlow Home
+                </a>
+                <a href="/login/"
+                   class="block w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium">
+                    Staff Login
+                </a>
+            </div>
+
+            <p class="mt-6 text-xs text-gray-500">
+                If you believe this is an error, please contact support.
+            </p>
+        </div>
+
+        <div class="mt-4 text-center text-sm text-gray-500">
+            Powered by <span class="font-medium">FleetFlow</span>
+        </div>
+    </div>
+</body>
+</html>

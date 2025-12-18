@@ -1,0 +1,123 @@
+{% extends 'public/base.html' %}
+
+{% block title %}{{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }} - {{ tenant.business_name }}{% endblock %}
+
+{% block content %}
+<div class="bg-brand-primary text-white py-8">
+    <div class="max-w-7xl mx-auto px-4">
+        <a href="{% url 'public:vehicles' %}" class="text-white/80 hover:text-white text-sm">
+            &larr; Back to Vehicles
+        </a>
+        <h1 class="text-3xl font-bold mt-2">{{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }}</h1>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div>
+            <div class="bg-gray-200 rounded-lg overflow-hidden aspect-video">
+                {% if vehicle.primary_photo %}
+                <img src="{{ vehicle.primary_photo.image.url }}" alt="{{ vehicle }}"
+                     class="w-full h-full object-cover" id="main-image">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center text-gray-400">
+                    <svg class="w-24 h-24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path>
+                    </svg>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if vehicle.photos.count > 1 %}
+            <div class="mt-4 grid grid-cols-5 gap-2">
+                {% for photo in vehicle.photos.all %}
+                <button onclick="document.getElementById('main-image').src='{{ photo.image.url }}'"
+                        class="aspect-video bg-gray-200 rounded overflow-hidden hover:ring-2 hover:ring-brand-primary">
+                    <img src="{{ photo.image.url }}" alt="Photo {{ forloop.counter }}"
+                         class="w-full h-full object-cover">
+                </button>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div>
+            <div class="bg-white rounded-lg shadow-lg p-6 sticky top-4">
+                <div class="flex items-baseline justify-between mb-6">
+                    <div>
+                        <span class="text-4xl font-bold text-brand-primary">${{ vehicle.daily_rate }}</span>
+                        <span class="text-gray-500 text-lg">/day</span>
+                    </div>
+                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                        Available
+                    </span>
+                </div>
+
+                <div class="border-t border-gray-200 pt-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Vehicle Details</h3>
+                    <dl class="grid grid-cols-2 gap-4">
+                        <div>
+                            <dt class="text-sm text-gray-500">Category</dt>
+                            <dd class="font-medium">{{ vehicle.get_category_display }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-gray-500">Year</dt>
+                            <dd class="font-medium">{{ vehicle.year }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-gray-500">Transmission</dt>
+                            <dd class="font-medium">{{ vehicle.get_transmission_display }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-gray-500">Fuel Type</dt>
+                            <dd class="font-medium">{{ vehicle.get_fuel_type_display }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-gray-500">Seats</dt>
+                            <dd class="font-medium">{{ vehicle.seats }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-gray-500">Color</dt>
+                            <dd class="font-medium">{{ vehicle.color|default:"Not specified" }}</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <a href="/login/"
+                       class="block w-full px-6 py-3 bg-brand-primary text-white text-center rounded-lg font-semibold text-lg hover:opacity-90 transition">
+                        Login to Reserve
+                    </a>
+                    <p class="text-sm text-gray-500 text-center mt-3">
+                        Don't have an account? Contact us to reserve.
+                    </p>
+                </div>
+
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <h4 class="font-medium text-gray-900 mb-2">Questions?</h4>
+                    <p class="text-sm text-gray-600 mb-2">Contact us for more information:</p>
+                    {% if tenant.business_phone %}
+                    <p class="text-sm">
+                        <span class="text-gray-500">Phone:</span>
+                        <a href="tel:{{ tenant.business_phone }}" class="text-brand-primary hover:underline">
+                            {{ tenant.business_phone }}
+                        </a>
+                    </p>
+                    {% endif %}
+                    {% if tenant.business_email %}
+                    <p class="text-sm">
+                        <span class="text-gray-500">Email:</span>
+                        <a href="mailto:{{ tenant.business_email }}" class="text-brand-primary hover:underline">
+                            {{ tenant.business_email }}
+                        </a>
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

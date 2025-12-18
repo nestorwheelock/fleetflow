@@ -22,18 +22,22 @@ class Command(BaseCommand):
         from apps.customers.models import Customer
         from apps.reservations.models import Reservation
 
+        admin_email = 'admin@fleetflow.local'
+
         if options['reset']:
             self.stdout.write('Deleting existing demo data...')
-            User.objects.filter(username='admin').delete()
+            User.objects.filter(email=admin_email).delete()
             Tenant.objects.filter(slug='demo-rental').delete()
 
-        # Create admin user
+        # Create admin user (using email as identifier)
         admin_user, created = User.objects.get_or_create(
-            username='admin',
+            email=admin_email,
             defaults={
-                'email': 'admin@fleetflow.local',
+                'first_name': 'Admin',
+                'last_name': 'User',
                 'is_staff': True,
                 'is_superuser': True,
+                'email_verified': True,
             }
         )
         if created:
@@ -160,6 +164,6 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('Demo data created successfully!'))
         self.stdout.write('')
         self.stdout.write('Login credentials:')
-        self.stdout.write(f'  Username: admin')
+        self.stdout.write(f'  Email: {admin_email}')
         self.stdout.write(f'  Password: admin123')
         self.stdout.write(f'  URL: http://localhost:9091/dashboard/')

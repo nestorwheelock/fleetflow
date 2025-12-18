@@ -1,0 +1,157 @@
+{% extends 'public/base.html' %}
+
+{% block title %}My Account - {{ tenant.business_name }}{% endblock %}
+
+{% block content %}
+<div class="bg-brand-primary text-white py-8">
+    <div class="max-w-7xl mx-auto px-4">
+        <h1 class="text-2xl font-bold">Welcome, {{ user.first_name|default:user.email }}</h1>
+        <p class="text-white/80 mt-1">Manage your account and reservations</p>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 py-8">
+    {% if messages %}
+    <div class="mb-6">
+        {% for message in messages %}
+        <div class="px-4 py-3 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <a href="{% url 'public:customer_reservations' %}"
+           class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900">My Reservations</h3>
+                    <p class="text-sm text-gray-500">View and manage bookings</p>
+                </div>
+            </div>
+        </a>
+
+        <a href="{% url 'public:customer_documents' %}"
+           class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900">My Documents</h3>
+                    <p class="text-sm text-gray-500">Upload license & insurance</p>
+                </div>
+            </div>
+        </a>
+
+        <a href="{% url 'public:vehicles' %}"
+           class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900">Browse Vehicles</h3>
+                    <p class="text-sm text-gray-500">Find your next rental</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white rounded-lg shadow">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="font-semibold text-gray-900">Recent Reservations</h2>
+            </div>
+            <div class="p-6">
+                {% if reservations %}
+                <div class="space-y-4">
+                    {% for reservation in reservations %}
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div>
+                            <p class="font-medium">{{ reservation.vehicle }}</p>
+                            <p class="text-sm text-gray-500">
+                                {{ reservation.start_date|date:"M d" }} - {{ reservation.end_date|date:"M d, Y" }}
+                            </p>
+                        </div>
+                        <span class="px-2 py-1 text-xs rounded
+                            {% if reservation.status == 'confirmed' %}bg-green-100 text-green-800
+                            {% elif reservation.status == 'pending' %}bg-yellow-100 text-yellow-800
+                            {% elif reservation.status == 'completed' %}bg-blue-100 text-blue-800
+                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {{ reservation.get_status_display }}
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+                <a href="{% url 'public:customer_reservations' %}"
+                   class="block text-center text-brand-primary hover:underline mt-4 text-sm font-medium">
+                    View All Reservations
+                </a>
+                {% else %}
+                <div class="text-center py-8 text-gray-500">
+                    <p>No reservations yet.</p>
+                    <a href="{% url 'public:vehicles' %}"
+                       class="inline-block mt-4 px-6 py-2 bg-brand-primary text-white rounded-lg font-medium hover:opacity-90 transition">
+                        Browse Vehicles
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="font-semibold text-gray-900">Document Status</h2>
+            </div>
+            <div class="p-6">
+                {% if documents %}
+                <div class="space-y-3">
+                    {% for doc in documents %}
+                    <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                        <div>
+                            <p class="font-medium text-sm">{{ doc.get_document_type_display }}</p>
+                            <p class="text-xs text-gray-500">{{ doc.uploaded_at|date:"M d, Y" }}</p>
+                        </div>
+                        <span class="px-2 py-1 text-xs rounded
+                            {% if doc.verification_status == 'verified' %}bg-green-100 text-green-800
+                            {% elif doc.verification_status == 'pending' %}bg-yellow-100 text-yellow-800
+                            {% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ doc.get_verification_status_display }}
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+                <a href="{% url 'public:customer_documents' %}"
+                   class="block text-center text-brand-primary hover:underline mt-4 text-sm font-medium">
+                    Manage Documents
+                </a>
+                {% else %}
+                <div class="text-center py-8 text-gray-500">
+                    <p class="mb-2">Upload your license and insurance to make reservations faster.</p>
+                    <a href="{% url 'public:customer_documents' %}"
+                       class="inline-block px-6 py-2 bg-brand-primary text-white rounded-lg font-medium hover:opacity-90 transition">
+                        Upload Documents
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -716,6 +716,52 @@ def customer_combined_license(request, pk):
 
 
 @login_required
+def branding_settings(request):
+    """Branding settings for tenant customization."""
+    if not hasattr(request, 'tenant') or not request.tenant:
+        return redirect('/no-tenant/')
+
+    tenant = request.tenant
+    tenant_user = getattr(request, 'tenant_user', None)
+
+    if not tenant_user or tenant_user.role != 'owner':
+        messages.error(request, 'Only tenant owners can access branding settings.')
+        return redirect('dashboard-home')
+
+    from apps.tenants.models import TenantBranding
+    branding = TenantBranding.get_or_create_for_tenant(tenant)
+
+    if request.method == 'POST':
+        branding.primary_color = request.POST.get('primary_color', branding.primary_color)
+        branding.secondary_color = request.POST.get('secondary_color', branding.secondary_color)
+        branding.accent_color = request.POST.get('accent_color', branding.accent_color)
+        branding.text_color = request.POST.get('text_color', branding.text_color)
+        branding.background_color = request.POST.get('background_color', branding.background_color)
+        branding.tagline = request.POST.get('tagline', '')
+        branding.welcome_message = request.POST.get('welcome_message', '')
+        branding.show_powered_by = 'show_powered_by' in request.POST
+        branding.custom_css = request.POST.get('custom_css', '')
+
+        if 'logo' in request.FILES:
+            branding.logo = request.FILES['logo']
+        if 'logo_dark' in request.FILES:
+            branding.logo_dark = request.FILES['logo_dark']
+        if 'favicon' in request.FILES:
+            branding.favicon = request.FILES['favicon']
+
+        branding.save()
+        messages.success(request, 'Branding settings updated successfully.')
+        return redirect('branding-settings')
+
+    context = {
+        'branding': branding,
+        'tenant': tenant,
+    }
+
+    return render(request, 'dashboard/settings/branding.html', context)
+
+
+@login_required
 def automation_settings(request):
     if not hasattr(request, 'tenant') or not request.tenant:
         return redirect('/no-tenant/')
@@ -818,3 +864,124 @@ def activity_log(request):
     }
 
     return render(request, 'dashboard/activity/list.html', context)
+
+
+@login_required
+def domain_settings(request):
+    """Custom domain settings for tenant."""
+    import secrets
+
+    if not hasattr(request, 'tenant') or not request.tenant:
+        return redirect('/no-tenant/')
+
+    tenant = request.tenant
+    tenant_user = getattr(request, 'tenant_user', None)
+
+    if not tenant_user or tenant_user.role != 'owner':
+        messages.error(request, 'Only tenant owners can access domain settings.')
+        return redirect('dashboard-home')
+
+    from apps.tenants.models import TenantDomain
+
+    if request.method == 'POST':
+        domain = request.POST.get('domain', '').strip().lower()
+        if domain:
+            if TenantDomain.objects.filter(domain=domain).exists():
+                messages.error(request, f'Domain {domain} is already in use.')
+            else:
+                verification_token = secrets.token_urlsafe(32)
+                TenantDomain.objects.create(
+                    tenant=tenant,
+                    domain=domain,
+                    verification_token=verification_token,
+                    verification_status='pending'
+                )
+                messages.success(request, f'Domain {domain} added. Please verify it by adding a DNS TXT record.')
+        return redirect('domain-settings')
+
+    domains = TenantDomain.objects.filter(tenant=tenant).order_by('-is_primary', 'domain')
+
+    context = {
+        'domains': domains,
+        'tenant': tenant,
+        'base_domain': getattr(settings, 'BASE_DOMAIN', 'fleetflow.com'),
+    }
+
+    return render(request, 'dashboard/settings/domains.html', context)
+
+
+@login_required
+def domain_delete(request, domain_id):
+    """Delete a custom domain."""
+    if not hasattr(request, 'tenant') or not request.tenant:
+        return redirect('/no-tenant/')
+
+    tenant_user = getattr(request, 'tenant_user', None)
+    if not tenant_user or tenant_user.role != 'owner':
+        messages.error(request, 'Only tenant owners can delete domains.')
+        return redirect('domain-settings')
+
+    from apps.tenants.models import TenantDomain
+
+    try:
+        domain = TenantDomain.objects.get(id=domain_id, tenant=request.tenant)
+        domain_name = domain.domain
+        domain.delete()
+        messages.success(request, f'Domain {domain_name} has been removed.')
+    except TenantDomain.DoesNotExist:
+        messages.error(request, 'Domain not found.')
+
+    return redirect('domain-settings')
+
+
+@login_required
+def domain_verify(request, domain_id):
+    """Verify a custom domain by checking DNS TXT record."""
+    import dns.resolver
+
+    if not hasattr(request, 'tenant') or not request.tenant:
+        return redirect('/no-tenant/')
+
+    tenant_user = getattr(request, 'tenant_user', None)
+    if not tenant_user or tenant_user.role != 'owner':
+        messages.error(request, 'Only tenant owners can verify domains.')
+        return redirect('domain-settings')
+
+    from apps.tenants.models import TenantDomain
+    from django.utils import timezone
+
+    try:
+        domain = TenantDomain.objects.get(id=domain_id, tenant=request.tenant)
+    except TenantDomain.DoesNotExist:
+        messages.error(request, 'Domain not found.')
+        return redirect('domain-settings')
+
+    expected_token = f'fleetflow-verify={domain.verification_token}'
+    txt_record_name = f'_fleetflow.{domain.domain}'
+
+    try:
+        answers = dns.resolver.resolve(txt_record_name, 'TXT')
+        for rdata in answers:
+            txt_value = str(rdata).strip('"')
+            if txt_value == expected_token:
+                domain.verification_status = 'verified'
+                domain.verified_at = timezone.now()
+                domain.save()
+                messages.success(request, f'Domain {domain.domain} has been verified!')
+                return redirect('domain-settings')
+
+        domain.verification_status = 'failed'
+        domain.save()
+        messages.error(request, f'Verification failed. TXT record not found or does not match.')
+    except dns.resolver.NXDOMAIN:
+        domain.verification_status = 'failed'
+        domain.save()
+        messages.error(request, f'DNS record not found. Please add TXT record at {txt_record_name}')
+    except dns.resolver.NoAnswer:
+        domain.verification_status = 'failed'
+        domain.save()
+        messages.error(request, f'No TXT record found at {txt_record_name}')
+    except Exception as e:
+        messages.error(request, f'Error checking DNS: {str(e)}')
+
+    return redirect('domain-settings')

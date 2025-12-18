@@ -1,0 +1,170 @@
+{% extends "platform_admin/base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-white">Platform Dashboard</h1>
+    <p class="text-gray-400">Overview of FleetFlow platform metrics</p>
+</div>
+
+<!-- Tenant Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+    <div class="bg-platform-900 border border-platform-700 rounded-lg p-4">
+        <div class="text-sm text-gray-400 mb-1">Total Tenants</div>
+        <div class="text-3xl font-bold text-white">{{ tenant_stats.total }}</div>
+    </div>
+    <div class="bg-platform-900 border border-platform-700 rounded-lg p-4">
+        <div class="text-sm text-gray-400 mb-1">Active</div>
+        <div class="text-3xl font-bold text-green-400">{{ tenant_stats.active }}</div>
+    </div>
+    <div class="bg-platform-900 border border-platform-700 rounded-lg p-4">
+        <div class="text-sm text-gray-400 mb-1">Trialing</div>
+        <div class="text-3xl font-bold text-blue-400">{{ tenant_stats.trialing }}</div>
+    </div>
+    <div class="bg-platform-900 border border-platform-700 rounded-lg p-4">
+        <div class="text-sm text-gray-400 mb-1">Past Due</div>
+        <div class="text-3xl font-bold text-yellow-400">{{ tenant_stats.past_due }}</div>
+    </div>
+    <div class="bg-platform-900 border border-platform-700 rounded-lg p-4">
+        <div class="text-sm text-gray-400 mb-1">Suspended</div>
+        <div class="text-3xl font-bold text-red-400">{{ tenant_stats.suspended }}</div>
+    </div>
+</div>
+
+<!-- User Stats -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <div class="text-sm text-gray-400 mb-1">Total Users</div>
+        <div class="text-2xl font-bold text-white">{{ user_stats.total }}</div>
+    </div>
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <div class="text-sm text-gray-400 mb-1">Staff Users</div>
+        <div class="text-2xl font-bold text-platform-400">{{ user_stats.staff }}</div>
+    </div>
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <div class="text-sm text-gray-400 mb-1">Customers</div>
+        <div class="text-2xl font-bold text-blue-400">{{ user_stats.customers }}</div>
+    </div>
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <div class="text-sm text-gray-400 mb-1">Email Verified</div>
+        <div class="text-2xl font-bold text-green-400">{{ user_stats.verified }}</div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Plan Distribution -->
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <h2 class="text-lg font-semibold text-white mb-4">Plan Distribution</h2>
+        <div class="space-y-3">
+            {% for plan in plan_distribution %}
+            <div class="flex items-center justify-between">
+                <span class="text-gray-300 capitalize">{{ plan.plan }}</span>
+                <div class="flex items-center">
+                    <div class="w-32 bg-gray-700 rounded-full h-2 mr-3">
+                        <div class="bg-platform-500 h-2 rounded-full" style="width: {% widthratio plan.count tenant_stats.total 100 %}%"></div>
+                    </div>
+                    <span class="text-gray-400 text-sm w-8 text-right">{{ plan.count }}</span>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-500">No tenants yet</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Trials Ending Soon -->
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <h2 class="text-lg font-semibold text-white mb-4">Trials Ending Soon</h2>
+        <div class="space-y-2">
+            {% for tenant in trials_ending %}
+            <div class="flex items-center justify-between p-2 bg-gray-700 rounded">
+                <a href="{% url 'platform_admin:tenant_detail' tenant.pk %}" class="text-platform-400 hover:text-platform-300">
+                    {{ tenant.name }}
+                </a>
+                <span class="text-sm text-yellow-400">
+                    Ends {{ tenant.trial_ends_at|date:"M d" }}
+                </span>
+            </div>
+            {% empty %}
+            <p class="text-gray-500">No trials ending soon</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Recent Signups -->
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <h2 class="text-lg font-semibold text-white mb-4">Recent Signups</h2>
+        <div class="space-y-2">
+            {% for tenant in recent_signups %}
+            <div class="flex items-center justify-between p-2 hover:bg-gray-700 rounded">
+                <div>
+                    <a href="{% url 'platform_admin:tenant_detail' tenant.pk %}" class="text-platform-400 hover:text-platform-300">
+                        {{ tenant.name }}
+                    </a>
+                    <div class="text-xs text-gray-500">{{ tenant.owner.email }}</div>
+                </div>
+                <span class="text-sm text-gray-400">
+                    {{ tenant.created_at|date:"M d" }}
+                </span>
+            </div>
+            {% empty %}
+            <p class="text-gray-500">No recent signups</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <h2 class="text-lg font-semibold text-white mb-4">Recent Activity</h2>
+        <div class="space-y-2">
+            {% for log in recent_activity %}
+            <div class="flex items-center justify-between p-2 hover:bg-gray-700 rounded text-sm">
+                <div>
+                    <span class="text-gray-300">{{ log.get_action_display }}</span>
+                    {% if log.tenant %}
+                    <span class="text-gray-500">- {{ log.tenant.name }}</span>
+                    {% endif %}
+                </div>
+                <span class="text-gray-500 text-xs">
+                    {{ log.timestamp|timesince }} ago
+                </span>
+            </div>
+            {% empty %}
+            <p class="text-gray-500">No recent activity</p>
+            {% endfor %}
+        </div>
+        <div class="mt-4">
+            <a href="{% url 'platform_admin:audit_logs' %}" class="text-platform-400 hover:text-platform-300 text-sm">
+                View All Activity →
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if active_impersonations %}
+<!-- Active Impersonation Warning -->
+<div class="mt-8 bg-red-900 border border-red-700 rounded-lg p-4">
+    <h2 class="text-lg font-semibold text-red-300 mb-2">Active Impersonation Sessions</h2>
+    <div class="space-y-2">
+        {% for session in active_impersonations %}
+        <div class="flex items-center justify-between p-2 bg-red-800 rounded">
+            <div>
+                <span class="text-red-200">{{ session.admin_user.email }}</span>
+                <span class="text-red-400">→</span>
+                <span class="text-red-200">{{ session.target_user.email }}</span>
+                {% if session.tenant %}
+                <span class="text-red-400">({{ session.tenant.name }})</span>
+                {% endif %}
+            </div>
+            <span class="text-sm text-red-300">
+                Started {{ session.started_at|timesince }} ago
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

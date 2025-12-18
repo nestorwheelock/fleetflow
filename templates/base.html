@@ -3,16 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}FleetFlow{% endblock %}</title>
+    <title>{% block title %}{% if tenant %}{{ tenant.business_name }} - {% endif %}FleetFlow{% endblock %}</title>
+    {% if branding and branding.favicon %}
+    <link rel="icon" href="{{ branding.favicon.url }}" type="image/x-icon">
+    {% endif %}
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         [x-cloak] { display: none !important; }
+        :root {
+            {% if branding_css %}{{ branding_css }};{% endif %}
+        }
     </style>
+    {% if branding and branding.custom_css %}
+    <style>{{ branding.custom_css|safe }}</style>
+    {% endif %}
     {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-gray-100 min-h-screen">
+    {% if request.is_impersonating %}
+    <div class="bg-red-600 text-white py-2 px-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <span class="font-medium">
+                    Impersonating: {{ request.user.email }}
+                </span>
+                <span class="text-red-200 text-sm">
+                    (You are logged in as {{ request.impersonator.email }})
+                </span>
+            </div>
+            <a href="{% url 'platform_admin:impersonate_end' %}"
+               class="px-3 py-1 bg-white text-red-600 rounded font-medium text-sm hover:bg-red-50">
+                End Impersonation
+            </a>
+        </div>
+    </div>
+    {% endif %}
     {% if tenant %}
     <nav class="bg-blue-600 text-white shadow-lg">
         <div class="max-w-7xl mx-auto px-4">
@@ -35,7 +65,9 @@
                     {% if tenant_user and tenant_user.role == 'owner' %}
                     <a href="/dashboard/settings/" class="hover:bg-blue-700 px-3 py-2 rounded text-sm">Settings</a>
                     {% endif %}
-                    <a href="/admin/" class="hover:bg-blue-700 px-3 py-2 rounded text-sm">Admin</a>
+                    {% if request.user.is_superuser %}
+                    <a href="{% url 'platform_admin:dashboard' %}" class="hover:bg-blue-700 px-3 py-2 rounded text-sm">Platform Admin</a>
+                    {% endif %}
                     <form action="/logout/" method="post" class="inline">
                         {% csrf_token %}
                         <button type="submit" class="hover:bg-blue-700 px-3 py-2 rounded text-sm">Logout</button>

@@ -10,7 +10,9 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-producti
 
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,.localhost').split(',')
+
+BASE_DOMAIN = config('BASE_DOMAIN', default='localhost')
 
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -35,6 +37,8 @@ LOCAL_APPS = [
     'apps.contracts',
     'apps.dashboard',
     'apps.automation',
+    'apps.platform_admin',
+    'apps.public',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -47,6 +51,8 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'apps.platform_admin.middleware.ImpersonationMiddleware',
+    'apps.tenants.middleware.SubdomainTenantMiddleware',
     'apps.tenants.middleware.TenantMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -77,6 +83,12 @@ DATABASE_URL = config('DATABASE_URL', default='sqlite:///db.sqlite3')
 DATABASES = {
     'default': dj_database_url.parse(DATABASE_URL)
 }
+
+AUTH_USER_MODEL = 'tenants.User'
+
+AUTHENTICATION_BACKENDS = [
+    'apps.tenants.backends.EmailBackend',
+]
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ tenant.business_name }}{% endblock %}</title>
+    {% if branding and branding.favicon %}
+    <link rel="icon" href="{{ branding.favicon.url }}" type="image/x-icon">
+    {% endif %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand': {
+                            primary: '{{ branding.primary_color|default:"#3B82F6" }}',
+                            secondary: '{{ branding.secondary_color|default:"#1E40AF" }}',
+                            accent: '{{ branding.accent_color|default:"#10B981" }}',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --brand-primary: {{ branding.primary_color|default:"#3B82F6" }};
+            --brand-secondary: {{ branding.secondary_color|default:"#1E40AF" }};
+            --brand-accent: {{ branding.accent_color|default:"#10B981" }};
+        }
+        .bg-brand-primary { background-color: var(--brand-primary); }
+        .text-brand-primary { color: var(--brand-primary); }
+        .border-brand-primary { border-color: var(--brand-primary); }
+        .bg-brand-accent { background-color: var(--brand-accent); }
+        .hover\:bg-brand-secondary:hover { background-color: var(--brand-secondary); }
+    </style>
+    {% if branding and branding.custom_css %}
+    <style>{{ branding.custom_css|safe }}</style>
+    {% endif %}
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <nav class="bg-brand-primary text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    {% if branding and branding.logo_dark %}
+                    <a href="{% url 'public:landing' %}">
+                        <img src="{{ branding.logo_dark.url }}" alt="{{ tenant.business_name }}" class="h-10">
+                    </a>
+                    {% elif branding and branding.logo %}
+                    <a href="{% url 'public:landing' %}">
+                        <img src="{{ branding.logo.url }}" alt="{{ tenant.business_name }}" class="h-10">
+                    </a>
+                    {% else %}
+                    <a href="{% url 'public:landing' %}" class="text-xl font-bold">
+                        {{ tenant.business_name }}
+                    </a>
+                    {% endif %}
+                </div>
+
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="{% url 'public:landing' %}" class="hover:text-gray-200">Home</a>
+                    <a href="{% url 'public:vehicles' %}" class="hover:text-gray-200">Vehicles</a>
+                    <a href="{% url 'public:contact' %}" class="hover:text-gray-200">Contact</a>
+                    {% if user.is_authenticated %}
+                    <a href="/dashboard/" class="hover:text-gray-200">My Account</a>
+                    {% else %}
+                    <a href="/login/" class="px-4 py-2 bg-white text-gray-800 rounded-lg font-medium hover:bg-gray-100">
+                        Login
+                    </a>
+                    {% endif %}
+                </div>
+
+                <button class="md:hidden" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="hidden md:hidden px-4 pb-4">
+            <a href="{% url 'public:landing' %}" class="block py-2 hover:text-gray-200">Home</a>
+            <a href="{% url 'public:vehicles' %}" class="block py-2 hover:text-gray-200">Vehicles</a>
+            <a href="{% url 'public:contact' %}" class="block py-2 hover:text-gray-200">Contact</a>
+            {% if user.is_authenticated %}
+            <a href="/dashboard/" class="block py-2 hover:text-gray-200">My Account</a>
+            {% else %}
+            <a href="/login/" class="block py-2 hover:text-gray-200">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">{{ tenant.business_name }}</h3>
+                    {% if branding and branding.tagline %}
+                    <p class="text-gray-400">{{ branding.tagline }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                    <div class="text-gray-400 space-y-2">
+                        {% if tenant.business_phone %}
+                        <p>Phone: {{ tenant.business_phone }}</p>
+                        {% endif %}
+                        {% if tenant.business_email %}
+                        <p>Email: {{ tenant.business_email }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <div class="space-y-2">
+                        <a href="{% url 'public:vehicles' %}" class="block text-gray-400 hover:text-white">Browse Vehicles</a>
+                        <a href="{% url 'public:contact' %}" class="block text-gray-400 hover:text-white">Contact Us</a>
+                        <a href="/login/" class="block text-gray-400 hover:text-white">Login</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-500 text-sm">
+                <p>&copy; {% now "Y" %} {{ tenant.business_name }}. All rights reserved.</p>
+                {% if branding.show_powered_by %}
+                <p class="mt-2">Powered by <span class="text-gray-400">FleetFlow</span></p>
+                {% endif %}
+            </div>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -117,17 +117,56 @@ class CustomerDocument(TenantModel):
         ('other', 'Other'),
     ]
 
+    VERIFICATION_STATUS = [
+        ('pending', 'Pending Review'),
+        ('verified', 'Verified'),
+        ('rejected', 'Rejected'),
+    ]
+
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='documents')
     document_type = models.CharField(max_length=20, choices=DOCUMENT_TYPES)
     file = models.FileField(upload_to='customer_documents/')
     description = models.CharField(max_length=200, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    verification_status = models.CharField(
+        max_length=20,
+        choices=VERIFICATION_STATUS,
+        default='pending'
+    )
+    verified_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='verified_documents'
+    )
+    verified_at = models.DateTimeField(null=True, blank=True)
+    rejection_reason = models.TextField(blank=True)
+
     class Meta:
         ordering = ['-uploaded_at']
 
     def __str__(self):
         return f'{self.customer} - {self.get_document_type_display()}'
+
+    def verify(self, user):
+        """Mark document as verified."""
+        from django.utils import timezone
+        self.verification_status = 'verified'
+        self.verified_by = user
+        self.verified_at = timezone.now()
+        self.rejection_reason = ''
+        self.save()
+
+    def reject(self, user, reason):
+        """Mark document as rejected."""
+        from django.utils import timezone
+        self.verification_status = 'rejected'
+        self.verified_by = user
+        self.verified_at = timezone.now()
+        self.rejection_reason = reason
+        self.save()
 
 
 class CustomerInsurance(TenantModel):

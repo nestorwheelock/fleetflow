@@ -39,6 +39,10 @@ urlpatterns = [
 
     # Settings
     path('settings/', views.automation_settings, name='settings'),
+    path('settings/branding/', views.branding_settings, name='branding-settings'),
+    path('settings/domains/', views.domain_settings, name='domain-settings'),
+    path('settings/domains/<int:domain_id>/delete/', views.domain_delete, name='domain-delete'),
+    path('settings/domains/<int:domain_id>/verify/', views.domain_verify, name='domain-verify'),
 
     # Activity Log
     path('activity/', views.activity_log, name='activity-log'),

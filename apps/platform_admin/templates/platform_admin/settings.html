@@ -1,0 +1,105 @@
+{% extends "platform_admin/base.html" %}
+
+{% block title %}Platform Settings{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-white">Platform Settings</h1>
+    <p class="text-gray-400">Configure platform-wide settings and features</p>
+</div>
+
+<form method="post" class="max-w-2xl">
+    {% csrf_token %}
+
+    <!-- Feature Toggles -->
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-6">
+        <h2 class="text-lg font-semibold text-white mb-4">Feature Toggles</h2>
+
+        <div class="space-y-4">
+            <label class="flex items-center justify-between p-3 bg-gray-700 rounded cursor-pointer hover:bg-gray-600">
+                <div>
+                    <div class="text-white font-medium">Require Email Verification</div>
+                    <div class="text-sm text-gray-400">New users must verify their email before accessing the platform</div>
+                </div>
+                <input type="checkbox" name="require_email_verification"
+                       {% if settings.require_email_verification %}checked{% endif %}
+                       class="w-5 h-5 text-platform-600 bg-gray-600 border-gray-500 rounded focus:ring-platform-500">
+            </label>
+
+            <label class="flex items-center justify-between p-3 bg-gray-700 rounded cursor-pointer hover:bg-gray-600">
+                <div>
+                    <div class="text-white font-medium">Allow Custom Domains</div>
+                    <div class="text-sm text-gray-400">Tenants can configure their own domains (e.g., rentals.company.com)</div>
+                </div>
+                <input type="checkbox" name="allow_custom_domains"
+                       {% if settings.allow_custom_domains %}checked{% endif %}
+                       class="w-5 h-5 text-platform-600 bg-gray-600 border-gray-500 rounded focus:ring-platform-500">
+            </label>
+
+            <label class="flex items-center justify-between p-3 bg-gray-700 rounded cursor-pointer hover:bg-gray-600">
+                <div>
+                    <div class="text-white font-medium">Allow Customer Registration</div>
+                    <div class="text-sm text-gray-400">Customers can self-register on tenant sites</div>
+                </div>
+                <input type="checkbox" name="allow_customer_registration"
+                       {% if settings.allow_customer_registration %}checked{% endif %}
+                       class="w-5 h-5 text-platform-600 bg-gray-600 border-gray-500 rounded focus:ring-platform-500">
+            </label>
+        </div>
+    </div>
+
+    <!-- Platform Branding -->
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-6">
+        <h2 class="text-lg font-semibold text-white mb-4">Platform Branding</h2>
+
+        <div>
+            <label class="block text-sm text-gray-400 mb-1">Platform Name</label>
+            <input type="text" name="platform_name" value="{{ settings.platform_name }}"
+                   class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-platform-500">
+            <p class="text-xs text-gray-500 mt-1">Displayed in platform-level interfaces</p>
+        </div>
+    </div>
+
+    <!-- Maintenance Mode -->
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-6">
+        <h2 class="text-lg font-semibold text-white mb-4">Maintenance Mode</h2>
+
+        <div class="space-y-4">
+            <label class="flex items-center justify-between p-3 bg-gray-700 rounded cursor-pointer hover:bg-gray-600">
+                <div>
+                    <div class="text-white font-medium">Enable Maintenance Mode</div>
+                    <div class="text-sm text-gray-400">Block all non-superuser access to the platform</div>
+                </div>
+                <input type="checkbox" name="maintenance_mode"
+                       {% if settings.maintenance_mode %}checked{% endif %}
+                       class="w-5 h-5 text-red-600 bg-gray-600 border-gray-500 rounded focus:ring-red-500">
+            </label>
+
+            <div>
+                <label class="block text-sm text-gray-400 mb-1">Maintenance Message</label>
+                <textarea name="maintenance_message" rows="3"
+                          class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-platform-500">{{ settings.maintenance_message }}</textarea>
+                <p class="text-xs text-gray-500 mt-1">Message shown to users during maintenance</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Current Settings Summary -->
+    <div class="bg-gray-700 border border-gray-600 rounded-lg p-4 mb-6">
+        <h3 class="text-sm font-medium text-gray-300 mb-2">Current Configuration</h3>
+        <div class="text-xs text-gray-400 space-y-1">
+            <div>Email Verification: <span class="text-white">{% if settings.require_email_verification %}Required{% else %}Not Required{% endif %}</span></div>
+            <div>Custom Domains: <span class="text-white">{% if settings.allow_custom_domains %}Enabled{% else %}Disabled{% endif %}</span></div>
+            <div>Customer Registration: <span class="text-white">{% if settings.allow_customer_registration %}Enabled{% else %}Disabled{% endif %}</span></div>
+            <div>Maintenance Mode: <span class="{% if settings.maintenance_mode %}text-red-400{% else %}text-white{% endif %}">{% if settings.maintenance_mode %}ACTIVE{% else %}Inactive{% endif %}</span></div>
+            <div>Last Updated: <span class="text-white">{{ settings.updated_at|date:"M d, Y H:i" }}</span></div>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-end">
+        <button type="submit" class="px-6 py-2 bg-platform-600 text-white rounded hover:bg-platform-700">
+            Save Settings
+        </button>
+    </div>
+</form>
+{% endblock %}

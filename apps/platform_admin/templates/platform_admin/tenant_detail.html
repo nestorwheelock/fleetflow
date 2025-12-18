@@ -1,0 +1,215 @@
+{% extends "platform_admin/base.html" %}
+
+{% block title %}{{ tenant.name }}{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <a href="{% url 'platform_admin:tenant_list' %}" class="text-platform-400 hover:text-platform-300 text-sm">
+        ← Back to Tenants
+    </a>
+</div>
+
+<div class="flex items-start justify-between mb-6">
+    <div>
+        <h1 class="text-2xl font-bold text-white">{{ tenant.name }}</h1>
+        <p class="text-gray-400">{{ tenant.slug }}.fleetflow.com</p>
+    </div>
+    <div class="flex items-center space-x-2">
+        {% if tenant.is_active %}
+        <span class="px-3 py-1 bg-green-900 text-green-300 rounded-full text-sm">Active</span>
+        {% else %}
+        <span class="px-3 py-1 bg-red-900 text-red-300 rounded-full text-sm">Suspended</span>
+        {% endif %}
+        <a href="{% url 'platform_admin:tenant_edit' tenant.pk %}"
+           class="px-4 py-2 bg-platform-600 text-white rounded hover:bg-platform-700">
+            Edit Tenant
+        </a>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <div class="text-sm text-gray-400 mb-1">Plan</div>
+        <div class="text-xl font-bold text-platform-400 capitalize">{{ tenant.plan }}</div>
+    </div>
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <div class="text-sm text-gray-400 mb-1">Vehicles</div>
+        <div class="text-xl font-bold text-white">{{ vehicle_count }} / {{ tenant.vehicle_limit }}</div>
+    </div>
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <div class="text-sm text-gray-400 mb-1">Customers</div>
+        <div class="text-xl font-bold text-white">{{ customer_count }}</div>
+    </div>
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <div class="text-sm text-gray-400 mb-1">Reservations</div>
+        <div class="text-xl font-bold text-white">{{ reservation_count }}</div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Business Information -->
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <h2 class="text-lg font-semibold text-white mb-4">Business Information</h2>
+        <dl class="space-y-3">
+            <div>
+                <dt class="text-sm text-gray-400">Business Name</dt>
+                <dd class="text-white">{{ tenant.business_name }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm text-gray-400">Email</dt>
+                <dd class="text-white">{{ tenant.business_email }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm text-gray-400">Phone</dt>
+                <dd class="text-white">{{ tenant.business_phone|default:"-" }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm text-gray-400">Address</dt>
+                <dd class="text-white">{{ tenant.business_address|default:"-"|linebreaks }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm text-gray-400">Timezone</dt>
+                <dd class="text-white">{{ tenant.timezone }}</dd>
+            </div>
+        </dl>
+    </div>
+
+    <!-- Subscription Details -->
+    <div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+        <h2 class="text-lg font-semibold text-white mb-4">Subscription Details</h2>
+        <dl class="space-y-3">
+            <div>
+                <dt class="text-sm text-gray-400">Plan</dt>
+                <dd class="text-white capitalize">{{ tenant.get_plan_display }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm text-gray-400">Status</dt>
+                <dd>
+                    <span class="px-2 py-1 text-xs rounded-full
+                        {% if tenant.subscription_status == 'active' %}bg-green-900 text-green-300
+                        {% elif tenant.subscription_status == 'trialing' %}bg-blue-900 text-blue-300
+                        {% elif tenant.subscription_status == 'past_due' %}bg-yellow-900 text-yellow-300
+                        {% else %}bg-gray-700 text-gray-300{% endif %}">
+                        {{ tenant.get_subscription_status_display }}
+                    </span>
+                </dd>
+            </div>
+            {% if tenant.trial_ends_at %}
+            <div>
+                <dt class="text-sm text-gray-400">Trial Ends</dt>
+                <dd class="text-white">{{ tenant.trial_ends_at|date:"M d, Y" }}</dd>
+            </div>
+            {% endif %}
+            <div>
+                <dt class="text-sm text-gray-400">Vehicle Limit</dt>
+                <dd class="text-white">{{ tenant.vehicle_limit }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm text-gray-400">User Limit</dt>
+                <dd class="text-white">{{ tenant.user_limit }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm text-gray-400">Created</dt>
+                <dd class="text-white">{{ tenant.created_at|date:"M d, Y" }}</dd>
+            </div>
+        </dl>
+
+        <!-- Suspend/Reactivate Button -->
+        <div class="mt-6 pt-4 border-t border-gray-700">
+            {% if tenant.is_active %}
+            <form method="post" action="{% url 'platform_admin:tenant_suspend' tenant.pk %}"
+                  onsubmit="return confirm('Are you sure you want to suspend this tenant? Users will not be able to log in.');">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="suspend">
+                <button type="submit" class="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-800">
+                    Suspend Tenant
+                </button>
+            </form>
+            {% else %}
+            <form method="post" action="{% url 'platform_admin:tenant_suspend' tenant.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reactivate">
+                <button type="submit" class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800">
+                    Reactivate Tenant
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Tenant Users -->
+<div class="bg-gray-800 border border-gray-700 rounded-lg p-4 mb-8">
+    <h2 class="text-lg font-semibold text-white mb-4">Tenant Users</h2>
+    <table class="w-full">
+        <thead>
+            <tr class="text-left text-sm text-gray-400">
+                <th class="pb-2">User</th>
+                <th class="pb-2">Role</th>
+                <th class="pb-2">Status</th>
+                <th class="pb-2">Joined</th>
+                <th class="pb-2 text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-700">
+            {% for tu in tenant_users %}
+            <tr>
+                <td class="py-2">
+                    <div class="text-white">{{ tu.user.get_display_name }}</div>
+                    <div class="text-xs text-gray-500">{{ tu.user.email }}</div>
+                </td>
+                <td class="py-2">
+                    <span class="px-2 py-1 text-xs rounded-full
+                        {% if tu.role == 'owner' %}bg-purple-900 text-purple-300
+                        {% elif tu.role == 'manager' %}bg-blue-900 text-blue-300
+                        {% else %}bg-gray-700 text-gray-300{% endif %}">
+                        {{ tu.get_role_display }}
+                    </span>
+                </td>
+                <td class="py-2">
+                    {% if tu.is_active %}
+                    <span class="text-green-400 text-sm">Active</span>
+                    {% else %}
+                    <span class="text-red-400 text-sm">Inactive</span>
+                    {% endif %}
+                </td>
+                <td class="py-2 text-gray-400 text-sm">
+                    {{ tu.created_at|date:"M d, Y" }}
+                </td>
+                <td class="py-2 text-right">
+                    <button type="button" class="text-platform-400 hover:text-platform-300 text-sm"
+                            onclick="alert('Impersonation will be available in Phase 4')">
+                        Impersonate
+                    </button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="py-4 text-center text-gray-500">No users found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Activity Log -->
+<div class="bg-gray-800 border border-gray-700 rounded-lg p-4">
+    <h2 class="text-lg font-semibold text-white mb-4">Activity Log</h2>
+    <div class="space-y-2">
+        {% for log in activity_logs %}
+        <div class="flex items-center justify-between p-2 hover:bg-gray-700 rounded text-sm">
+            <div>
+                <span class="text-gray-300">{{ log.get_action_display }}</span>
+                <span class="text-gray-500">by {{ log.admin_user.email|default:"System" }}</span>
+            </div>
+            <span class="text-gray-500 text-xs">
+                {{ log.timestamp|date:"M d, Y H:i" }}
+            </span>
+        </div>
+        {% empty %}
+        <p class="text-gray-500">No activity logged yet</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
