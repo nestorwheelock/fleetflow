@@ -8,28 +8,33 @@
     <p class="text-gray-600">Welcome back! Here's what's happening today.</p>
 </div>
 
-<!-- Stats Cards -->
+<!-- Stats Cards - Clickable Quick Links -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-    <div class="bg-white rounded-lg shadow p-6">
+    <a href="/dashboard/vehicles/" class="bg-white rounded-lg shadow p-6 hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer block">
         <div class="text-sm font-medium text-gray-500">Total Vehicles</div>
         <div class="text-3xl font-bold text-gray-900">{{ stats.total_vehicles }}</div>
-    </div>
-    <div class="bg-white rounded-lg shadow p-6">
+        <div class="text-xs text-blue-600 mt-2">View all →</div>
+    </a>
+    <a href="/dashboard/vehicles/?status=available" class="bg-white rounded-lg shadow p-6 hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer block">
         <div class="text-sm font-medium text-gray-500">Available</div>
         <div class="text-3xl font-bold text-green-600">{{ stats.available_vehicles }}</div>
-    </div>
-    <div class="bg-white rounded-lg shadow p-6">
+        <div class="text-xs text-blue-600 mt-2">View available →</div>
+    </a>
+    <a href="/dashboard/vehicles/?status=rented" class="bg-white rounded-lg shadow p-6 hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer block">
         <div class="text-sm font-medium text-gray-500">Rented</div>
         <div class="text-3xl font-bold text-blue-600">{{ stats.rented_vehicles }}</div>
-    </div>
-    <div class="bg-white rounded-lg shadow p-6">
+        <div class="text-xs text-blue-600 mt-2">View rented →</div>
+    </a>
+    <a href="/dashboard/customers/" class="bg-white rounded-lg shadow p-6 hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer block">
         <div class="text-sm font-medium text-gray-500">Total Customers</div>
         <div class="text-3xl font-bold text-gray-900">{{ stats.total_customers }}</div>
-    </div>
-    <div class="bg-white rounded-lg shadow p-6">
+        <div class="text-xs text-blue-600 mt-2">View all →</div>
+    </a>
+    <a href="/dashboard/contracts/" class="bg-white rounded-lg shadow p-6 hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer block">
         <div class="text-sm font-medium text-gray-500">Revenue (This Month)</div>
         <div class="text-3xl font-bold text-green-600">${{ revenue_this_month|floatformat:2 }}</div>
-    </div>
+        <div class="text-xs text-blue-600 mt-2">View contracts →</div>
+    </a>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
