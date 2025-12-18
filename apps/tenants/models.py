@@ -255,6 +255,7 @@ class ActivityLog(models.Model):
         ('create', 'Create'),
         ('update', 'Update'),
         ('delete', 'Delete'),
+        ('upload', 'Upload'),
         ('checkout', 'Checkout'),
         ('checkin', 'Check-in'),
         ('status_change', 'Status Change'),

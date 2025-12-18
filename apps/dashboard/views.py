@@ -151,6 +151,7 @@ class VehicleDeleteView(LoginRequiredMixin, TenantMixin, DeleteView):
 def vehicle_photo_upload(request, pk):
     """Upload photos for a vehicle."""
     from apps.fleet.models import VehiclePhoto
+    from apps.tenants.models import log_activity
 
     vehicle = get_object_or_404(Vehicle, pk=pk, tenant=request.tenant)
 
@@ -173,6 +174,13 @@ def vehicle_photo_upload(request, pk):
         )
         created_photos.append(photo.pk)
 
+        log_activity(
+            tenant=request.tenant,
+            user=request.user,
+            action='upload',
+            instance=photo,
+        )
+
     return JsonResponse({'success': True, 'photos': created_photos})
 
 
@@ -180,6 +188,7 @@ def vehicle_photo_upload(request, pk):
 def vehicle_photo_delete(request, pk, photo_pk):
     """Delete a vehicle photo."""
     from apps.fleet.models import VehiclePhoto
+    from apps.tenants.models import log_activity
 
     vehicle = get_object_or_404(Vehicle, pk=pk, tenant=request.tenant)
     photo = get_object_or_404(VehiclePhoto, pk=photo_pk, vehicle=vehicle)
@@ -188,6 +197,16 @@ def vehicle_photo_delete(request, pk, photo_pk):
         return JsonResponse({'error': 'POST required'}, status=405)
 
     was_primary = photo.is_primary
+    photo_repr = str(photo)
+    photo_id = photo.pk
+
+    log_activity(
+        tenant=request.tenant,
+        user=request.user,
+        action='delete',
+        instance=photo,
+    )
+
     photo.delete()
 
     # If deleted photo was primary, set another as primary
