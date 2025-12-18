@@ -10,6 +10,9 @@ urlpatterns = [
     path('vehicles/<int:pk>/', views.VehicleDetailView.as_view(), name='vehicle-detail'),
     path('vehicles/<int:pk>/edit/', views.VehicleUpdateView.as_view(), name='vehicle-edit'),
     path('vehicles/<int:pk>/delete/', views.VehicleDeleteView.as_view(), name='vehicle-delete'),
+    path('vehicles/<int:pk>/photos/upload/', views.vehicle_photo_upload, name='vehicle-photo-upload'),
+    path('vehicles/<int:pk>/photos/<int:photo_pk>/delete/', views.vehicle_photo_delete, name='vehicle-photo-delete'),
+    path('vehicles/<int:pk>/photos/<int:photo_pk>/primary/', views.vehicle_photo_primary, name='vehicle-photo-primary'),
 
     # Customers
     path('customers/', views.CustomerListView.as_view(), name='customer-list'),

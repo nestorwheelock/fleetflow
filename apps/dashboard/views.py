@@ -147,6 +147,77 @@ class VehicleDeleteView(LoginRequiredMixin, TenantMixin, DeleteView):
         return '/dashboard/vehicles/'
 
 
+@login_required
+def vehicle_photo_upload(request, pk):
+    """Upload photos for a vehicle."""
+    from apps.fleet.models import VehiclePhoto
+
+    vehicle = get_object_or_404(Vehicle, pk=pk, tenant=request.tenant)
+
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+
+    photos = request.FILES.getlist('photos')
+    set_primary = request.POST.get('set_primary') == 'true'
+
+    if not photos:
+        return JsonResponse({'error': 'No photos provided'}, status=400)
+
+    created_photos = []
+    for i, photo_file in enumerate(photos):
+        is_primary = set_primary and i == 0 and not vehicle.photos.filter(is_primary=True).exists()
+        photo = VehiclePhoto.objects.create(
+            vehicle=vehicle,
+            image=photo_file,
+            is_primary=is_primary
+        )
+        created_photos.append(photo.pk)
+
+    return JsonResponse({'success': True, 'photos': created_photos})
+
+
+@login_required
+def vehicle_photo_delete(request, pk, photo_pk):
+    """Delete a vehicle photo."""
+    from apps.fleet.models import VehiclePhoto
+
+    vehicle = get_object_or_404(Vehicle, pk=pk, tenant=request.tenant)
+    photo = get_object_or_404(VehiclePhoto, pk=photo_pk, vehicle=vehicle)
+
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+
+    was_primary = photo.is_primary
+    photo.delete()
+
+    # If deleted photo was primary, set another as primary
+    if was_primary:
+        next_photo = vehicle.photos.first()
+        if next_photo:
+            next_photo.is_primary = True
+            next_photo.save()
+
+    return JsonResponse({'success': True})
+
+
+@login_required
+def vehicle_photo_primary(request, pk, photo_pk):
+    """Set a photo as primary."""
+    from apps.fleet.models import VehiclePhoto
+
+    vehicle = get_object_or_404(Vehicle, pk=pk, tenant=request.tenant)
+    photo = get_object_or_404(VehiclePhoto, pk=photo_pk, vehicle=vehicle)
+
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+
+    # The VehiclePhoto.save() method handles clearing other primary flags
+    photo.is_primary = True
+    photo.save()
+
+    return JsonResponse({'success': True})
+
+
 class CustomerListView(LoginRequiredMixin, TenantMixin, ListView):
     model = Customer
     template_name = 'dashboard/customers/list.html'
