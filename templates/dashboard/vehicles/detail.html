@@ -36,7 +36,7 @@
                 {% for photo in vehicle.photos.all %}
                 <div class="relative group">
                     <img src="{{ photo.image.url }}" alt="Vehicle photo"
-                         class="w-full h-24 object-cover rounded cursor-pointer hover:opacity-90 transition {% if photo.is_primary %}ring-2 ring-blue-500{% endif %}"
+                         class="w-full aspect-video object-cover rounded cursor-pointer hover:opacity-90 transition {% if photo.is_primary %}ring-2 ring-blue-500{% endif %}"
                          @click="openLightbox('{{ photo.image.url }}')">
                     {% if photo.is_primary %}
                     <span class="absolute top-1 left-1 bg-blue-600 text-white text-xs px-1.5 py-0.5 rounded">Primary</span>
@@ -176,7 +176,7 @@
                         <div class="flex flex-wrap gap-2">
                             <template x-for="(file, index) in selectedFiles" :key="index">
                                 <div class="relative">
-                                    <img :src="file.preview" class="w-16 h-16 object-cover rounded">
+                                    <img :src="file.preview" class="w-24 h-16 object-cover rounded">
                                     <button type="button" @click="removeFile(index)" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs">&times;</button>
                                 </div>
                             </template>

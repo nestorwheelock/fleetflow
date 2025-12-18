@@ -51,6 +51,28 @@ class TestCalendarView:
             assert 'end' in event
             assert 'color' in event
 
+    def test_calendar_end_date_is_exclusive(self, tenant_client, reservation):
+        """B-007: Calendar end date should be exclusive (one day after actual end).
+
+        FullCalendar treats end dates as exclusive for all-day events.
+        If a reservation is Dec 18-20, we need to return end as Dec 21.
+        """
+        client, tenant = tenant_client
+        response = client.get('/api/reservations/calendar/')
+        assert response.status_code == 200
+        if len(response.data) > 0:
+            event = response.data[0]
+            # Find the matching reservation
+            from apps.reservations.models import Reservation
+            res = Reservation.objects.get(pk=event['id'])
+            # End date in API should be one day after actual end_date
+            expected_end = res.end_date + timedelta(days=1)
+            # Compare as dates (response may be date object or string)
+            event_end = event['end']
+            if isinstance(event_end, str):
+                event_end = date.fromisoformat(event_end)
+            assert event_end == expected_end, f"Expected {expected_end}, got {event_end}"
+
 
 class TestCustomerCRUD:
     """Tests for Customer create/edit/delete views"""

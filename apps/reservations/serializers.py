@@ -92,9 +92,14 @@ class ReservationListSerializer(serializers.ModelSerializer):
 
 
 class CalendarEventSerializer(serializers.ModelSerializer):
+    """Serializer for FullCalendar events.
+
+    Note: FullCalendar treats the 'end' date as EXCLUSIVE for all-day events.
+    If a reservation is from Dec 18 to Dec 20, we need to return end as Dec 21.
+    """
     title = serializers.SerializerMethodField()
     start = serializers.DateField(source='start_date')
-    end = serializers.DateField(source='end_date')
+    end = serializers.SerializerMethodField()
     color = serializers.SerializerMethodField()
 
     class Meta:
@@ -103,6 +108,11 @@ class CalendarEventSerializer(serializers.ModelSerializer):
 
     def get_title(self, obj):
         return f'{obj.vehicle} - {obj.customer}'
+
+    def get_end(self, obj):
+        """Return end date + 1 day for FullCalendar's exclusive end date handling."""
+        from datetime import timedelta
+        return obj.end_date + timedelta(days=1)
 
     def get_color(self, obj):
         colors = {

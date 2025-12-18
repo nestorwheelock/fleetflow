@@ -18,11 +18,21 @@ class TestAuthenticationViews:
         assert b'password' in response.content.lower()
 
     def test_logout_url_exists(self, client, tenant_user):
-        """Logout URL should be accessible"""
+        """Logout URL should be accessible via POST"""
         client.force_login(tenant_user.user)
         response = client.post('/logout/')
         # Should redirect after logout
         assert response.status_code in [200, 302]
+
+    def test_logout_requires_post_method(self, client, tenant_user):
+        """B-006: Logout should require POST method, not GET.
+
+        Django's LogoutView requires POST for security (CSRF protection).
+        GET requests should return 405 Method Not Allowed.
+        """
+        client.force_login(tenant_user.user)
+        response = client.get('/logout/')
+        assert response.status_code == 405, "Logout should reject GET requests"
 
     def test_login_redirects_to_dashboard(self, client, tenant_user):
         """Successful login should redirect to dashboard"""
