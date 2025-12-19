@@ -5,11 +5,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: python manage.py runserver 0.0.0.0:9199
+    command: python manage.py runserver 0.0.0.0:9091
     volumes:
       - .:/app
     ports:
-      - "9199:9199"
+      - "9091:9091"
     environment:
       - DEBUG=True
       - SECRET_KEY=django-insecure-dev-key-change-in-production
