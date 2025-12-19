@@ -4,7 +4,7 @@
 **Priority**: High
 **Estimate**: 2 days
 **Sprint**: Epoch 1
-**Status**: Pending
+**Status**: Partial ✓ (Plan tiers implemented, feature flags pending)
 
 ## User Story
 **As a** FleetFlow platform operator
@@ -12,26 +12,38 @@
 **So that** tenants only use features included in their subscription
 
 ## Acceptance Criteria
-- [ ] Vehicle count enforced per plan (10, 25, 50, unlimited)
-- [ ] User count enforced per plan (1, 3, 10, unlimited)
+- [x] Vehicle count enforced per plan (3, 10, 25, 100, unlimited)
+- [x] User count enforced per plan (1, 2, 3, 10, unlimited)
+- [x] Per-rental fee model for Personal and Starter plans
 - [ ] Features enabled/disabled based on plan
 - [ ] Graceful messaging when limit reached
 - [ ] Upgrade prompts when hitting limits
 - [ ] Soft limits with warnings vs hard limits
 - [ ] Plan changes take effect immediately
 
+## Pricing Tiers
+
+| Plan | Base Price | Per Rental Fee | Target Audience |
+|------|------------|----------------|-----------------|
+| Personal | Free | $2.50 | Individuals with 1-3 cars |
+| Starter | $29/mo | $0.75 | Small rental shops |
+| Professional | $79/mo | None | Growing businesses |
+| Business | $199/mo | None | Established companies |
+| Enterprise | Custom | None | Large fleets |
+
 ## Plan Limits Matrix
 
-| Limit | Starter | Pro | Business | Enterprise |
-|-------|---------|-----|----------|------------|
-| Vehicles | 10 | 25 | 50 | Unlimited |
-| Users | 1 | 3 | 10 | Unlimited |
-| Online Booking | No | Yes | Yes | Yes |
-| PayPal Payments | No | Yes | Yes | Yes |
-| GPS Tracking | No | No | Yes | Yes |
-| Analytics | Basic | Standard | Advanced | Custom |
-| API Access | No | No | Yes | Yes |
-| Custom Domain | No | No | Yes | Yes |
+| Limit | Personal | Starter | Pro | Business | Enterprise |
+|-------|----------|---------|-----|----------|------------|
+| Vehicles | 3 | 10 | 25 | 100 | Unlimited |
+| Users | 1 | 2 | 3 | 10 | Unlimited |
+| Online Booking | No | No | Yes | Yes | Yes |
+| Customer Portal | No | No | Yes | Yes | Yes |
+| GPS Tracking | No | No | No | Yes | Yes |
+| Analytics | None | Basic | Standard | Advanced | Custom |
+| API Access | No | No | No | Yes | Yes |
+| Custom Domain | No | No | No | Yes | Yes |
+| FleetFlow Branding | Required | Required | Optional | None | None |
 
 ## Technical Implementation
 - [ ] Tenant.features JSONField for feature flags

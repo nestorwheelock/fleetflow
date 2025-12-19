@@ -37,8 +37,8 @@ class TestAuthenticationViews:
     def test_login_redirects_to_dashboard(self, client, tenant_user):
         """Successful login should redirect to dashboard"""
         response = client.post('/login/', {
-            'username': tenant_user.user.username,
-            'password': 'testpassword123',
+            'username': tenant_user.user.email,
+            'password': 'testpass123',  # From conftest.py user fixture
         })
         # Will be 302 redirect or 200 with form errors
         assert response.status_code in [200, 302]

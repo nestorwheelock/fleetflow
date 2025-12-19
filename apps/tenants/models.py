@@ -94,6 +94,7 @@ class User(AbstractUser):
 
 class Tenant(models.Model):
     PLAN_CHOICES = [
+        ('personal', 'Personal'),
         ('starter', 'Starter'),
         ('professional', 'Professional'),
         ('business', 'Business'),
@@ -108,6 +109,15 @@ class Tenant(models.Model):
         ('unpaid', 'Unpaid'),
     ]
 
+    # Plan limits and pricing by tier
+    PLAN_LIMITS = {
+        'personal': {'vehicles': 3, 'users': 1, 'base_price': 0, 'rental_fee': 2.50},
+        'starter': {'vehicles': 10, 'users': 2, 'base_price': 29, 'rental_fee': 0.75},
+        'professional': {'vehicles': 25, 'users': 3, 'base_price': 79, 'rental_fee': 0},
+        'business': {'vehicles': 100, 'users': 10, 'base_price': 199, 'rental_fee': 0},
+        'enterprise': {'vehicles': 999999, 'users': 999999, 'base_price': 0, 'rental_fee': 0},
+    }
+
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
     owner = models.ForeignKey(
@@ -116,17 +126,23 @@ class Tenant(models.Model):
         related_name='owned_tenants'
     )
 
-    plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default='starter')
+    plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default='personal')
     stripe_customer_id = models.CharField(max_length=255, blank=True)
     stripe_subscription_id = models.CharField(max_length=255, blank=True)
     subscription_status = models.CharField(
         max_length=20,
         choices=SUBSCRIPTION_STATUS_CHOICES,
-        default='trialing'
+        default='active'  # Personal plan is free, so start as active
     )
 
-    vehicle_limit = models.IntegerField(default=10)
+    vehicle_limit = models.IntegerField(default=3)  # Personal plan default
     user_limit = models.IntegerField(default=1)
+    rental_fee = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=2.50,
+        help_text='Per-rental fee charged to tenant (0 for Professional+)'
+    )
     features = models.JSONField(default=dict, blank=True)
 
     business_name = models.CharField(max_length=200)
@@ -167,7 +183,32 @@ class Tenant(models.Model):
         return current_count < self.user_limit
 
     def get_plan_limits(self):
-        return settings.PLAN_LIMITS.get(self.plan, {})
+        """Get the limits and pricing for the current plan."""
+        return self.PLAN_LIMITS.get(self.plan, {})
+
+    def has_rental_fee(self):
+        """Check if this plan charges per-rental fees."""
+        return self.rental_fee > 0
+
+    def get_rental_fee(self):
+        """Get the per-rental fee for this tenant."""
+        return self.rental_fee
+
+    def get_base_price(self):
+        """Get the monthly base price for this plan."""
+        return self.PLAN_LIMITS.get(self.plan, {}).get('base_price', 0)
+
+    def is_free_plan(self):
+        """Check if this is a free plan (Personal tier)."""
+        return self.plan == 'personal'
+
+    def apply_plan_defaults(self):
+        """Apply default limits and fees based on the selected plan."""
+        limits = self.PLAN_LIMITS.get(self.plan, {})
+        if limits:
+            self.vehicle_limit = limits.get('vehicles', self.vehicle_limit)
+            self.user_limit = limits.get('users', self.user_limit)
+            self.rental_fee = limits.get('rental_fee', self.rental_fee)
 
 
 class TenantBranding(models.Model):

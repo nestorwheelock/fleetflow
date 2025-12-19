@@ -74,7 +74,8 @@ class TestTenantManagement:
         client.force_login(superuser)
         response = client.get('/admin-platform/tenants/')
         assert response.status_code == 200
-        assert platform_tenant.business_name in response.content.decode()
+        # Template displays tenant.name in the list
+        assert platform_tenant.name in response.content.decode()
 
     def test_tenant_detail_shows_info(self, client, superuser, platform_tenant):
         client.force_login(superuser)
