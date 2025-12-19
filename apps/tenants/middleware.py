@@ -170,11 +170,15 @@ class TenantRequiredMiddleware:
 
     def __call__(self, request):
         if request.user.is_authenticated:
+            # Superusers don't need a tenant - they use platform admin
+            if request.user.is_superuser:
+                return self.get_response(request)
+
             if not hasattr(request, 'tenant') or not request.tenant:
                 path = request.path
                 if not any(path.startswith(exempt) for exempt in self.exempt_paths):
                     if path.startswith('/dashboard/') or path.startswith('/api/'):
-                        return redirect('/no-tenant/')
+                        return redirect('no-tenant')
 
         response = self.get_response(request)
         return response

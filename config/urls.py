@@ -5,8 +5,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from apps.tenants.forms import EmailAuthenticationForm
+from apps.tenants.views import NoTenantView
 
 urlpatterns = [
+    # No tenant page (for users without tenant access)
+    path('no-tenant/', NoTenantView.as_view(), name='no-tenant'),
+
     # Authentication with email-based login
     path('login/', auth_views.LoginView.as_view(
         authentication_form=EmailAuthenticationForm

@@ -6,9 +6,23 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.db.models import Sum
 from django.utils import timezone
+from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import timedelta
 
 from .models import Tenant, TenantUser, TenantSettings
+
+
+class NoTenantView(LoginRequiredMixin, TemplateView):
+    """View shown when user has no tenant access."""
+    template_name = 'tenants/no_tenant.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        return context
+
+
 from .serializers import (
     TenantSerializer, TenantUserSerializer, TenantStatsSerializer,
     TenantSettingsSerializer

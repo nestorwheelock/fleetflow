@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Not Found - FleetFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full mx-4">
+        <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+            <div class="mb-6">
+                <svg class="w-16 h-16 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </div>
+
+            <h1 class="text-2xl font-bold text-gray-900 mb-4">Tenant Not Found</h1>
+
+            <p class="text-gray-600 mb-2">
+                The rental company <strong class="text-gray-900">{{ subdomain }}</strong> could not be found.
+            </p>
+
+            <p class="text-gray-500 text-sm mb-6">
+                This subdomain may have been deactivated or does not exist.
+            </p>
+
+            <div class="space-y-3">
+                <a href="/"
+                   class="block w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                    Go to FleetFlow Home
+                </a>
+            </div>
+
+            <p class="text-sm text-gray-500 mt-6">
+                If you believe this is an error, please contact support.
+            </p>
+        </div>
+
+        <div class="text-center mt-4 text-sm text-gray-500">
+            FleetFlow - Car Rental Management Software
+        </div>
+    </div>
+</body>
+</html>
