@@ -1,0 +1,253 @@
+{% extends "marketing/base.html" %}
+
+{% block title %}Pricing - FleetFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    .pricing-hero {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        padding: 4rem 1rem;
+        text-align: center;
+    }
+
+    .pricing-hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .pricing-section {
+        padding: 4rem 1rem;
+    }
+
+    .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .pricing-card {
+        background: var(--white);
+        border: 1px solid var(--gray-200);
+        border-radius: 1rem;
+        padding: 2rem 1.5rem;
+        text-align: center;
+    }
+
+    .pricing-card.featured {
+        border: 2px solid var(--primary);
+        position: relative;
+    }
+
+    .pricing-card.featured::before {
+        content: "POPULAR";
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--primary);
+        color: white;
+        padding: 0.25rem 1rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .pricing-card h3 {
+        font-size: 1.25rem;
+        color: var(--gray-700);
+        margin-bottom: 1rem;
+    }
+
+    .pricing-card .price {
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+
+    .pricing-card .price span {
+        font-size: 1rem;
+        color: var(--gray-500);
+    }
+
+    .pricing-card .rental-fee {
+        color: var(--gray-600);
+        margin-bottom: 1.5rem;
+    }
+
+    .pricing-card ul {
+        list-style: none;
+        text-align: left;
+        margin-bottom: 1.5rem;
+    }
+
+    .pricing-card ul li {
+        padding: 0.5rem 0;
+        font-size: 0.9rem;
+        border-bottom: 1px solid var(--gray-100);
+    }
+
+    .pricing-card ul li:last-child {
+        border-bottom: none;
+    }
+
+    .faq-section {
+        padding: 4rem 1rem;
+        background: var(--gray-50);
+    }
+
+    .faq-grid {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .faq-item {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .faq-item h3 {
+        font-size: 1.125rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .faq-item p {
+        color: var(--gray-600);
+    }
+
+    @media (max-width: 1024px) {
+        .pricing-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .pricing-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .pricing-card.featured {
+            order: -1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="pricing-hero">
+    <h1>Simple, Transparent Pricing</h1>
+    <p>Start free, scale as you grow. No hidden fees.</p>
+</section>
+
+<section class="pricing-section">
+    <div class="container">
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3>Personal</h3>
+                <div class="price">FREE<span>/mo</span></div>
+                <div class="rental-fee">+ $2.50 per rental</div>
+                <ul>
+                    <li>&#10003; Up to 3 vehicles</li>
+                    <li>&#10003; 1 user account</li>
+                    <li>&#10003; Basic scheduling</li>
+                    <li>&#10003; Email support</li>
+                    <li>&#10003; FleetFlow branding</li>
+                </ul>
+                <a href="{% url 'login' %}?plan=personal" class="btn btn-outline" style="width: 100%;">Start Free</a>
+            </div>
+
+            <div class="pricing-card featured">
+                <h3>Starter</h3>
+                <div class="price">$29<span>/mo</span></div>
+                <div class="rental-fee">+ $0.75 per rental</div>
+                <ul>
+                    <li>&#10003; Up to 10 vehicles</li>
+                    <li>&#10003; 2 user accounts</li>
+                    <li>&#10003; Digital contracts</li>
+                    <li>&#10003; Basic analytics</li>
+                    <li>&#10003; Priority email support</li>
+                </ul>
+                <a href="{% url 'login' %}?plan=starter" class="btn btn-primary" style="width: 100%;">Start Trial</a>
+            </div>
+
+            <div class="pricing-card">
+                <h3>Professional</h3>
+                <div class="price">$79<span>/mo</span></div>
+                <div class="rental-fee">No rental fees!</div>
+                <ul>
+                    <li>&#10003; Up to 25 vehicles</li>
+                    <li>&#10003; 3 user accounts</li>
+                    <li>&#10003; Online bookings</li>
+                    <li>&#10003; Customer portal</li>
+                    <li>&#10003; Standard analytics</li>
+                </ul>
+                <a href="{% url 'login' %}?plan=professional" class="btn btn-outline" style="width: 100%;">Start Trial</a>
+            </div>
+
+            <div class="pricing-card">
+                <h3>Business</h3>
+                <div class="price">$199<span>/mo</span></div>
+                <div class="rental-fee">No rental fees!</div>
+                <ul>
+                    <li>&#10003; Up to 100 vehicles</li>
+                    <li>&#10003; 10 user accounts</li>
+                    <li>&#10003; GPS tracking</li>
+                    <li>&#10003; Advanced analytics</li>
+                    <li>&#10003; API access</li>
+                </ul>
+                <a href="{% url 'login' %}?plan=business" class="btn btn-outline" style="width: 100%;">Start Trial</a>
+            </div>
+
+            <div class="pricing-card">
+                <h3>Enterprise</h3>
+                <div class="price">Custom</div>
+                <div class="rental-fee">No rental fees!</div>
+                <ul>
+                    <li>&#10003; Unlimited vehicles</li>
+                    <li>&#10003; Unlimited users</li>
+                    <li>&#10003; Custom integrations</li>
+                    <li>&#10003; Dedicated support</li>
+                    <li>&#10003; Custom branding</li>
+                </ul>
+                <a href="#" class="btn btn-outline" style="width: 100%;">Contact Sales</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="faq-section">
+    <div class="container">
+        <h2 style="text-align: center; margin-bottom: 2rem;">Frequently Asked Questions</h2>
+
+        <div class="faq-grid">
+            <div class="faq-item">
+                <h3>What's included in the free Personal plan?</h3>
+                <p>The Personal plan includes everything you need to manage up to 3 vehicles: scheduling, basic contracts, and email support. You only pay $2.50 per completed rental.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Can I upgrade or downgrade anytime?</h3>
+                <p>Yes! You can change your plan at any time. Upgrades take effect immediately, and downgrades take effect at the end of your billing cycle.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Is there a free trial for paid plans?</h3>
+                <p>Yes, all paid plans come with a 14-day free trial. No credit card required to start.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>How does the per-rental fee work?</h3>
+                <p>For Personal and Starter plans, we charge a small fee per completed rental. This is deducted automatically or billed monthly, whichever you prefer.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>What payment methods do you accept?</h3>
+                <p>We accept all major credit cards (Visa, Mastercard, Amex) and can arrange invoicing for Enterprise customers.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,874 @@
+{% extends "marketing/base.html" %}
+
+{% block extra_css %}
+<style>
+    /* Hero Section */
+    .hero {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: var(--white);
+        padding: 4rem 1rem;
+        text-align: center;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+
+    .hero p {
+        font-size: 1.25rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Two Column CTA */
+    .dual-cta {
+        padding: 4rem 1rem;
+        background: var(--gray-50);
+    }
+
+    .dual-cta-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .cta-card {
+        background: var(--white);
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .cta-card h2 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .cta-card .subtitle {
+        color: var(--gray-600);
+        margin-bottom: 1.5rem;
+    }
+
+    .cta-card ul {
+        list-style: none;
+        margin-bottom: 1.5rem;
+    }
+
+    .cta-card ul li {
+        padding: 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .cta-card ul li::before {
+        content: "✓";
+        color: var(--success);
+        font-weight: bold;
+    }
+
+    .pricing-highlight {
+        background: var(--gray-50);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .pricing-highlight .free {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--success);
+    }
+
+    .pricing-highlight .per-rental {
+        color: var(--gray-600);
+        font-size: 0.875rem;
+    }
+
+    .cta-form {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .cta-form input {
+        flex: 1;
+    }
+
+    .search-card .search-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .search-dates {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+    }
+
+    .popular-locations {
+        margin-top: 1.5rem;
+        font-size: 0.875rem;
+        color: var(--gray-600);
+    }
+
+    .popular-locations a {
+        margin: 0 0.25rem;
+    }
+
+    /* How It Works */
+    .how-it-works {
+        padding: 5rem 1rem;
+        text-align: center;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 3rem;
+        color: var(--gray-900);
+    }
+
+    .steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .step {
+        padding: 1.5rem;
+    }
+
+    .step-icon {
+        width: 80px;
+        height: 80px;
+        background: var(--primary);
+        color: var(--white);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin: 0 auto 1rem;
+    }
+
+    .step h3 {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .step p {
+        color: var(--gray-600);
+        font-size: 0.9rem;
+    }
+
+    .step-arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: var(--gray-300);
+    }
+
+    /* Pricing Section */
+    .pricing {
+        padding: 5rem 1rem;
+        background: var(--gray-50);
+    }
+
+    .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        max-width: 1000px;
+        margin: 0 auto 2rem;
+    }
+
+    .pricing-card {
+        background: var(--white);
+        border-radius: 1rem;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: var(--shadow);
+        position: relative;
+    }
+
+    .pricing-card.featured {
+        border: 2px solid var(--primary);
+        transform: scale(1.05);
+    }
+
+    .pricing-card.featured::before {
+        content: "POPULAR";
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--primary);
+        color: white;
+        padding: 0.25rem 1rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .pricing-card h3 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--gray-700);
+    }
+
+    .pricing-card .price {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--gray-900);
+    }
+
+    .pricing-card .price span {
+        font-size: 1rem;
+        color: var(--gray-500);
+    }
+
+    .pricing-card .rental-fee {
+        font-size: 0.875rem;
+        color: var(--gray-600);
+        margin-bottom: 1.5rem;
+    }
+
+    .pricing-card ul {
+        list-style: none;
+        text-align: left;
+        margin-bottom: 1.5rem;
+    }
+
+    .pricing-card ul li {
+        padding: 0.5rem 0;
+        font-size: 0.9rem;
+        color: var(--gray-600);
+    }
+
+    .pricing-more {
+        text-align: center;
+        color: var(--gray-600);
+    }
+
+    /* Testimonials */
+    .testimonials {
+        padding: 5rem 1rem;
+    }
+
+    .testimonial-card {
+        max-width: 700px;
+        margin: 0 auto;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .testimonial-quote {
+        font-size: 1.5rem;
+        font-style: italic;
+        color: var(--gray-700);
+        margin-bottom: 1.5rem;
+        line-height: 1.8;
+    }
+
+    .testimonial-stars {
+        color: #fbbf24;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .testimonial-author {
+        font-weight: 600;
+        color: var(--gray-900);
+    }
+
+    .testimonial-company {
+        color: var(--gray-500);
+        font-size: 0.9rem;
+    }
+
+    .testimonial-nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .testimonial-nav button {
+        background: var(--gray-200);
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+    }
+
+    .testimonial-dots {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .testimonial-dots span {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--gray-300);
+    }
+
+    .testimonial-dots span.active {
+        background: var(--primary);
+    }
+
+    /* Features Grid */
+    .features {
+        padding: 5rem 1rem;
+        background: var(--gray-50);
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .feature-card {
+        background: var(--white);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .feature-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+        font-size: 1.125rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .feature-card p {
+        color: var(--gray-600);
+        font-size: 0.875rem;
+    }
+
+    /* Referral Section */
+    .referral {
+        padding: 5rem 1rem;
+    }
+
+    .referral-box {
+        max-width: 700px;
+        margin: 0 auto;
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border-radius: 1rem;
+        padding: 3rem;
+        text-align: center;
+    }
+
+    .referral-box h2 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .referral-box .subtitle {
+        color: var(--gray-700);
+        margin-bottom: 2rem;
+    }
+
+    .referral-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .referral-types {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .referral-types label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+
+    .referral-note {
+        font-size: 0.875rem;
+        color: var(--gray-600);
+        margin-top: 1rem;
+    }
+
+    /* Final CTA */
+    .final-cta {
+        padding: 5rem 1rem;
+        background: var(--primary);
+        color: var(--white);
+        text-align: center;
+    }
+
+    .final-cta h2 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .final-cta .subtitle {
+        opacity: 0.9;
+        margin-bottom: 2rem;
+    }
+
+    .final-cta-form {
+        display: flex;
+        gap: 0.5rem;
+        max-width: 500px;
+        margin: 0 auto 1rem;
+    }
+
+    .final-cta-form input {
+        flex: 1;
+    }
+
+    .final-cta .btn {
+        background: var(--white);
+        color: var(--primary);
+    }
+
+    .final-cta .note {
+        opacity: 0.8;
+        font-size: 0.875rem;
+    }
+
+    /* Success message */
+    .alert {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        display: none;
+    }
+
+    .alert-success {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .alert-error {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero h1 {
+            font-size: 1.75rem;
+        }
+
+        .dual-cta-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .steps {
+            grid-template-columns: 1fr;
+        }
+
+        .step-arrow {
+            transform: rotate(90deg);
+        }
+
+        .pricing-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .pricing-card.featured {
+            transform: none;
+        }
+
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .referral-form {
+            grid-template-columns: 1fr;
+        }
+
+        .referral-types {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .cta-form {
+            flex-direction: column;
+        }
+
+        .final-cta-form {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="hero">
+    <div class="container">
+        <h1>The Smart Way to Manage Car Rentals</h1>
+        <p>Whether you're renting out your cars or looking for a rental, FleetFlow connects you with the right solution.</p>
+    </div>
+</section>
+
+<!-- Two Column CTA -->
+<section class="dual-cta">
+    <div class="dual-cta-grid">
+        <!-- Left: Car Owners -->
+        <div class="cta-card owner-card">
+            <h2>&#128663; I Have Cars to Rent</h2>
+            <p class="subtitle">Turn your vehicles into a profitable rental business.</p>
+
+            <ul>
+                <li>Manage 1-100+ vehicles</li>
+                <li>Online bookings & payments</li>
+                <li>Professional contracts</li>
+                <li>Customer management</li>
+            </ul>
+
+            <div class="pricing-highlight">
+                <span class="free">FREE to start</span><br>
+                <span class="per-rental">Personal: $0/mo + $2.50/rental</span>
+            </div>
+
+            <div class="alert alert-success" id="owner-success"></div>
+            <form class="cta-form" id="owner-signup-form">
+                {% csrf_token %}
+                <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+                <input type="hidden" name="lead_type" value="owner">
+                <input type="hidden" name="source" value="homepage-owner">
+                <button type="submit" class="btn btn-primary">Start Free Trial</button>
+            </form>
+        </div>
+
+        <!-- Right: Renters -->
+        <div class="cta-card search-card">
+            <h2>&#128270; I'm Looking for a Rental</h2>
+            <p class="subtitle">Find trusted local rental companies near you.</p>
+
+            <form class="search-form" action="{% url 'marketing:rental-search' %}" method="get">
+                <input type="text" name="location" class="form-control" placeholder="City or ZIP code" required>
+
+                <div class="search-dates">
+                    <input type="date" name="pickup_date" class="form-control" placeholder="Pickup date">
+                    <input type="date" name="return_date" class="form-control" placeholder="Return date">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">&#128270; Search Rentals</button>
+            </form>
+
+            <p class="popular-locations">
+                Or browse popular locations:
+                <a href="{% url 'marketing:rental-search' %}?location=Austin">Austin</a> &bull;
+                <a href="{% url 'marketing:rental-search' %}?location=Dallas">Dallas</a> &bull;
+                <a href="{% url 'marketing:rental-search' %}?location=Houston">Houston</a>
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-it-works">
+    <div class="container">
+        <h2 class="section-title">How FleetFlow Works for Car Owners</h2>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-icon">&#128221;</div>
+                <h3>Sign Up</h3>
+                <p>Create your account in 2 minutes. No credit card required.</p>
+            </div>
+
+            <div class="step">
+                <div class="step-icon">&#128663;</div>
+                <h3>Add Your Cars</h3>
+                <p>Upload your fleet with photos, pricing, and availability.</p>
+            </div>
+
+            <div class="step">
+                <div class="step-icon">&#128176;</div>
+                <h3>Get Paid</h3>
+                <p>Accept bookings and collect payments automatically.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing -->
+<section class="pricing">
+    <div class="container">
+        <h2 class="section-title">Pricing That Scales With You</h2>
+
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3>Personal</h3>
+                <div class="price">FREE<span>/mo</span></div>
+                <div class="rental-fee">+ $2.50 per rental</div>
+                <ul>
+                    <li>&#10003; Up to 3 vehicles</li>
+                    <li>&#10003; 1 user</li>
+                    <li>&#10003; Basic scheduling</li>
+                    <li>&#10003; Email support</li>
+                </ul>
+                <a href="{% url 'login' %}?plan=personal" class="btn btn-outline" style="width: 100%;">Start Free</a>
+            </div>
+
+            <div class="pricing-card featured">
+                <h3>Starter</h3>
+                <div class="price">$29<span>/mo</span></div>
+                <div class="rental-fee">+ $0.75 per rental</div>
+                <ul>
+                    <li>&#10003; Up to 10 vehicles</li>
+                    <li>&#10003; 2 users</li>
+                    <li>&#10003; Digital contracts</li>
+                    <li>&#10003; Priority support</li>
+                </ul>
+                <a href="{% url 'login' %}?plan=starter" class="btn btn-primary" style="width: 100%;">Start Trial</a>
+            </div>
+
+            <div class="pricing-card">
+                <h3>Professional</h3>
+                <div class="price">$79<span>/mo</span></div>
+                <div class="rental-fee">No rental fees!</div>
+                <ul>
+                    <li>&#10003; Up to 25 vehicles</li>
+                    <li>&#10003; 3 users</li>
+                    <li>&#10003; Online bookings</li>
+                    <li>&#10003; Customer portal</li>
+                </ul>
+                <a href="{% url 'login' %}?plan=professional" class="btn btn-outline" style="width: 100%;">Start Trial</a>
+            </div>
+        </div>
+
+        <p class="pricing-more">
+            Need more? <a href="{% url 'marketing:pricing' %}">View Business ($199/mo) & Enterprise plans</a>
+        </p>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials">
+    <div class="container">
+        <h2 class="section-title">Trusted by Rental Businesses</h2>
+
+        <div class="testimonial-card" id="testimonial-carousel">
+            {% for testimonial in testimonials %}
+            <div class="testimonial-slide" {% if not forloop.first %}style="display:none"{% endif %}>
+                <p class="testimonial-quote">"{{ testimonial.quote }}"</p>
+                <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <p class="testimonial-author">{{ testimonial.author }}, {{ testimonial.location }}</p>
+                <p class="testimonial-company">{{ testimonial.company }}</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="testimonial-nav">
+            <button onclick="prevTestimonial()">&#8592; Prev</button>
+            <div class="testimonial-dots">
+                {% for testimonial in testimonials %}
+                <span {% if forloop.first %}class="active"{% endif %}></span>
+                {% endfor %}
+            </div>
+            <button onclick="nextTestimonial()">Next &#8594;</button>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="features">
+    <div class="container">
+        <h2 class="section-title">Everything You Need to Succeed</h2>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">&#128197;</div>
+                <h3>Smart Scheduling</h3>
+                <p>Visual calendar with drag & drop reservations. Never double-book again.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">&#128196;</div>
+                <h3>Digital Contracts</h3>
+                <p>E-signatures, photo capture, and automatic damage reports.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">&#128202;</div>
+                <h3>Real-Time Reports</h3>
+                <p>Track revenue, vehicle utilization, and your most popular rentals.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">&#128101;</div>
+                <h3>Customer Portal</h3>
+                <p>Customers book online, upload documents, and manage their rentals.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">&#127760;</div>
+                <h3>Your Own Website</h3>
+                <p>yourname.fleetflow.com branded landing page for your business.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">&#128241;</div>
+                <h3>Mobile Ready</h3>
+                <p>Manage your fleet from any device, anywhere.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Referral -->
+<section class="referral">
+    <div class="container">
+        <div class="referral-box">
+            <h2>&#128236; Know Someone Who Should Be on FleetFlow?</h2>
+            <p class="subtitle">Send them a FREE $25 credit to try FleetFlow!</p>
+
+            <div class="alert alert-success" id="referral-success"></div>
+            <form id="referral-form">
+                {% csrf_token %}
+                <div class="referral-form">
+                    <input type="email" name="referred_email" class="form-control" placeholder="Their email address" required>
+                    <input type="email" name="referrer_email" class="form-control" placeholder="Your email address" required>
+                </div>
+
+                <div class="referral-types">
+                    <label>
+                        <input type="radio" name="referral_type" value="owner" checked>
+                        They have cars to rent
+                    </label>
+                    <label>
+                        <input type="radio" name="referral_type" value="renter">
+                        They're looking for rentals
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg">&#127873; Send Free Credit</button>
+            </form>
+
+            <p class="referral-note">When they sign up, YOU also get $25 credit!</p>
+        </div>
+    </div>
+</section>
+
+<!-- Final CTA -->
+<section class="final-cta">
+    <div class="container">
+        <h2>Ready to Start Your Rental Business?</h2>
+        <p class="subtitle">Join 500+ rental businesses already using FleetFlow</p>
+
+        <div class="alert alert-success" id="final-success" style="max-width: 500px; margin: 0 auto 1rem;"></div>
+        <form class="final-cta-form" id="final-signup-form">
+            {% csrf_token %}
+            <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+            <input type="hidden" name="lead_type" value="owner">
+            <input type="hidden" name="source" value="homepage-final">
+            <button type="submit" class="btn btn-lg">Get Started Free</button>
+        </form>
+
+        <p class="note">No credit card required &bull; Setup in under 5 minutes</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Testimonial carousel
+let currentSlide = 0;
+const slides = document.querySelectorAll('.testimonial-slide');
+const dots = document.querySelectorAll('.testimonial-dots span');
+
+function showSlide(index) {
+    slides.forEach((slide, i) => {
+        slide.style.display = i === index ? 'block' : 'none';
+    });
+    dots.forEach((dot, i) => {
+        dot.className = i === index ? 'active' : '';
+    });
+}
+
+function nextTestimonial() {
+    currentSlide = (currentSlide + 1) % slides.length;
+    showSlide(currentSlide);
+}
+
+function prevTestimonial() {
+    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+    showSlide(currentSlide);
+}
+
+// Auto-advance every 5 seconds
+setInterval(nextTestimonial, 5000);
+
+// Form handling
+function handleFormSubmit(form, successEl, endpoint) {
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                successEl.textContent = data.message;
+                successEl.style.display = 'block';
+                form.reset();
+            } else {
+                successEl.className = 'alert alert-error';
+                successEl.textContent = Object.values(data.errors).flat().join(' ');
+                successEl.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+}
+
+// Owner signup form
+const ownerForm = document.getElementById('owner-signup-form');
+const ownerSuccess = document.getElementById('owner-success');
+handleFormSubmit(ownerForm, ownerSuccess, '{% url "marketing:lead-capture" %}');
+
+// Final signup form
+const finalForm = document.getElementById('final-signup-form');
+const finalSuccess = document.getElementById('final-success');
+handleFormSubmit(finalForm, finalSuccess, '{% url "marketing:lead-capture" %}');
+
+// Referral form
+const referralForm = document.getElementById('referral-form');
+const referralSuccess = document.getElementById('referral-success');
+handleFormSubmit(referralForm, referralSuccess, '{% url "marketing:referral" %}');
+</script>
+{% endblock %}

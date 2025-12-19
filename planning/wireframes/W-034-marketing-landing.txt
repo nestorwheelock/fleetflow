@@ -1,0 +1,391 @@
+# W-034: FleetFlow Marketing Landing Page
+
+## Overview
+
+Main marketing landing page for fleetflow.com (the platform domain, not tenant subdomains).
+Markets FleetFlow to two audiences:
+1. **Car owners** who want to rent out their vehicles (become FleetFlow tenants)
+2. **Renters** who are looking for cars to rent (find local rental companies)
+
+---
+
+## DESKTOP VIEW (> 1024px)
+
+```
++==============================================================================+
+|  [FF LOGO] FleetFlow                         [Features] [Pricing] [Login]    |
+|  =========================================================================== |
++==============================================================================+
+|                                                                              |
+|  +========================================================================+  |
+|  |                                                                        |  |
+|  |           THE SMART WAY TO MANAGE CAR RENTALS                          |  |
+|  |                                                                        |  |
+|  |     Whether you're renting out your cars or looking for a rental,     |  |
+|  |              FleetFlow connects you with the right solution.          |  |
+|  |                                                                        |  |
+|  +========================================================================+  |
+|                                                                              |
+|  +-----------------------------------+  +-----------------------------------+ |
+|  |                                   |  |                                   | |
+|  |  CAR ICON  I HAVE CARS TO RENT    |  |  SEARCH  I'M LOOKING FOR A RENTAL | |
+|  |  ============================     |  |  ================================ | |
+|  |                                   |  |                                   | |
+|  |  Turn your vehicles into a        |  |  Find trusted local rental        | |
+|  |  profitable rental business.      |  |  companies near you.              | |
+|  |                                   |  |                                   | |
+|  |  * Manage 1-100+ vehicles         |  |  +-----------------------------+  | |
+|  |  * Online bookings & payments     |  |  | City or ZIP code            |  | |
+|  |  * Professional contracts         |  |  +-----------------------------+  | |
+|  |  * Customer management            |  |                                   | |
+|  |                                   |  |  +-------------+ +-------------+  | |
+|  |  FREE to start                    |  |  | Pickup Date | | Return Date |  | |
+|  |  Personal: $0/mo + $2.50/rental   |  |  +-------------+ +-------------+  | |
+|  |                                   |  |                                   | |
+|  |  +-----------------------------+  |  |  [  SEARCH RENTALS  ]             | |
+|  |  |  Enter your email           |  |  |                                   | |
+|  |  |  [  Start Free Trial ->  ]  |  |  |  Or browse popular locations:    | |
+|  |  +-----------------------------+  |  |  Austin * Dallas * Houston        | |
+|  |                                   |  |  San Antonio * El Paso            | |
+|  +-----------------------------------+  +-----------------------------------+ |
+|                                                                              |
++==============================================================================+
+|                                                                              |
+|                    HOW FLEETFLOW WORKS FOR CAR OWNERS                        |
+|  =========================================================================== |
+|                                                                              |
+|   +---------------+        +---------------+        +---------------+        |
+|   |     ICON      |   ->   |     ICON      |   ->   |     ICON      |        |
+|   |   SIGN UP     |        |   ADD CARS    |        |   GET PAID    |        |
+|   |               |        |               |        |               |        |
+|   | Create your   |        | Upload your   |        | Accept        |        |
+|   | account in    |        | fleet with    |        | bookings &    |        |
+|   | 2 minutes     |        | photos &      |        | collect       |        |
+|   |               |        | pricing       |        | payments      |        |
+|   +---------------+        +---------------+        +---------------+        |
+|                                                                              |
++==============================================================================+
+|                                                                              |
+|                         PRICING THAT SCALES WITH YOU                         |
+|  =========================================================================== |
+|                                                                              |
+|   +-----------------+  +-----------------+  +-----------------+              |
+|   |    PERSONAL     |  |     STARTER     |  |  PROFESSIONAL   |              |
+|   |   -----------   |  |   -----------   |  |   -----------   |              |
+|   |                 |  |                 |  |                 |              |
+|   |    FREE /mo     |  |    $29 /mo      |  |    $79 /mo      |              |
+|   | + $2.50/rental  |  | + $0.75/rental  |  |  No rental fee  |              |
+|   |                 |  |                 |  |                 |              |
+|   |  * Up to 3 cars |  |  * Up to 10     |  |  * Up to 25     |              |
+|   |  * 1 user       |  |  * 2 users      |  |  * 3 users      |              |
+|   |  * Basic tools  |  |  * Email support|  |  * Online books |              |
+|   |                 |  |                 |  |  * Priority     |              |
+|   | [Start Free ->] |  | [Start Trial ->]|  | [Start Trial ->]|              |
+|   +-----------------+  +-----------------+  +-----------------+              |
+|                                                                              |
+|              Need more? Business ($199/mo) & Enterprise plans                |
+|                           [View All Plans ->]                                |
+|                                                                              |
++==============================================================================+
+|                                                                              |
+|                        TRUSTED BY RENTAL BUSINESSES                          |
+|  =========================================================================== |
+|                                                                              |
+|   +----------------------------------------------------------------------+   |
+|   |                                                                      |   |
+|   |   "FleetFlow transformed my side hustle into a real business.       |   |
+|   |    I started with 2 cars, now I manage 15."                         |   |
+|   |                                                                      |   |
+|   |                              *****                                   |   |
+|   |                        -- Maria G., Austin TX                        |   |
+|   |                          Ron's Rentals                               |   |
+|   |                                                                      |   |
+|   +----------------------------------------------------------------------+   |
+|                                                                              |
+|        [<-  Previous  ]    * o o o                      [  Next  ->]         |
+|                                                                              |
++==============================================================================+
+|                                                                              |
+|                         EVERYTHING YOU NEED TO SUCCEED                       |
+|  =========================================================================== |
+|                                                                              |
+|   +-------------------+  +-------------------+  +-------------------+        |
+|   |       ICON        |  |       ICON        |  |       ICON        |        |
+|   | Smart Scheduling  |  | Digital Contracts |  | Real-Time Reports |        |
+|   |                   |  |                   |  |                   |        |
+|   | Visual calendar   |  | E-signatures,     |  | Track revenue,    |        |
+|   | with drag & drop  |  | photo capture,    |  | utilization,      |        |
+|   | reservations      |  | damage reports    |  | popular vehicles  |        |
+|   +-------------------+  +-------------------+  +-------------------+        |
+|                                                                              |
+|   +-------------------+  +-------------------+  +-------------------+        |
+|   |       ICON        |  |       ICON        |  |       ICON        |        |
+|   | Customer Portal   |  | Your Own Website  |  | Mobile Ready      |        |
+|   |                   |  |                   |  |                   |        |
+|   | Customers book    |  | yourname.fleet-   |  | Manage your fleet |        |
+|   | online, upload    |  | flow.com branded  |  | from any device,  |        |
+|   | documents, pay    |  | landing page      |  | anywhere          |        |
+|   +-------------------+  +-------------------+  +-------------------+        |
+|                                                                              |
++==============================================================================+
+|                                                                              |
+|             KNOW SOMEONE WHO SHOULD BE ON FLEETFLOW?                         |
+|  =========================================================================== |
+|                                                                              |
+|   +----------------------------------------------------------------------+   |
+|   |                                                                      |   |
+|   |        Send them a FREE $25 credit to try FleetFlow!                 |   |
+|   |                                                                      |   |
+|   |   +---------------------------+  +---------------------------+       |   |
+|   |   | Their email address       |  | Your email address        |       |   |
+|   |   +---------------------------+  +---------------------------+       |   |
+|   |                                                                      |   |
+|   |   ( ) They have cars to rent    ( ) They're looking for rentals     |   |
+|   |                                                                      |   |
+|   |                    [  SEND FREE CREDIT  ]                            |   |
+|   |                                                                      |   |
+|   |   When they sign up, YOU also get $25 credit!                        |   |
+|   |                                                                      |   |
+|   +----------------------------------------------------------------------+   |
+|                                                                              |
++==============================================================================+
+|                                                                              |
+|               READY TO START YOUR RENTAL BUSINESS?                           |
+|  =========================================================================== |
+|                                                                              |
+|   +----------------------------------------------------------------------+   |
+|   |                                                                      |   |
+|   |    Join 500+ rental businesses already using FleetFlow               |   |
+|   |                                                                      |   |
+|   |    [ Enter your email          ]  [  Get Started Free ->  ]          |   |
+|   |                                                                      |   |
+|   |    No credit card required * Setup in under 5 minutes                |   |
+|   |                                                                      |   |
+|   +----------------------------------------------------------------------+   |
+|                                                                              |
++==============================================================================+
+|  FOOTER                                                                      |
+|  =========================================================================== |
+|                                                                              |
+|  [FF] FleetFlow                                                              |
+|  The smart way to manage car rentals.                                        |
+|                                                                              |
+|  Product            Resources          Company           Legal              |
+|  ---------          ---------          ---------         ---------          |
+|  Features           Help Center        About Us          Privacy Policy     |
+|  Pricing            API Docs           Careers           Terms of Service   |
+|  Integrations       Blog               Contact           Cookie Policy      |
+|  Mobile App         Status             Press Kit                            |
+|                                                                              |
+|  --------------------------------------------------------------------------  |
+|  (c) 2025 FleetFlow. All rights reserved.          [Twitter] [LinkedIn] [FB]|
++==============================================================================+
+```
+
+---
+
+## MOBILE VIEW (< 768px)
+
+```
++---------------------------+
+| [FF] FleetFlow        =   |
++---------------------------+
+|                           |
+|  THE SMART WAY TO         |
+|  MANAGE CAR RENTALS       |
+|                           |
+|  Whether you're renting   |
+|  out cars or looking      |
+|  for a rental...          |
+|                           |
++---------------------------+
+|                           |
+|  CAR  I HAVE CARS TO RENT |
+|  ----------------------   |
+|                           |
+|  Turn your vehicles       |
+|  into income.             |
+|                           |
+|  * Manage 1-100+ cars     |
+|  * Online bookings        |
+|  * Professional tools     |
+|                           |
+|  FREE to start            |
+|  $0/mo + $2.50/rental     |
+|                           |
+|  [ Your email         ]   |
+|  [ Start Free Trial -> ]  |
+|                           |
++---------------------------+
+|                           |
+|  SEARCH  LOOKING FOR CAR? |
+|  ----------------------   |
+|                           |
+|  Find local rentals       |
+|                           |
+|  [ City or ZIP        ]   |
+|  [Pickup   ][Return   ]   |
+|  [  Search Rentals -> ]   |
+|                           |
++---------------------------+
+|                           |
+|  HOW IT WORKS             |
+|  -------------            |
+|                           |
+|  1. Sign Up               |
+|  Create account free      |
+|                           |
+|  2. Add Your Cars         |
+|  Upload photos & prices   |
+|                           |
+|  3. Get Paid              |
+|  Accept bookings easily   |
+|                           |
++---------------------------+
+|                           |
+|  PRICING                  |
+|  --------                 |
+|                           |
+|  +---------------------+  |
+|  | PERSONAL - FREE     |  |
+|  | + $2.50/rental      |  |
+|  | Up to 3 cars        |  |
+|  | [Start Free ->]     |  |
+|  +---------------------+  |
+|                           |
+|  +---------------------+  |
+|  | STARTER - $29/mo    |  |
+|  | + $0.75/rental      |  |
+|  | Up to 10 cars       |  |
+|  | [Start Trial ->]    |  |
+|  +---------------------+  |
+|                           |
+|  +---------------------+  |
+|  | PROFESSIONAL $79/mo |  |
+|  | No rental fees!     |  |
+|  | Up to 25 cars       |  |
+|  | [Start Trial ->]    |  |
+|  +---------------------+  |
+|                           |
+|  [View All Plans ->]      |
+|                           |
++---------------------------+
+|                           |
+|  WHAT CUSTOMERS SAY       |
+|  -------------------      |
+|                           |
+|  *****                    |
+|  "FleetFlow transformed   |
+|  my side hustle into a    |
+|  real business."          |
+|  -- Maria G., Austin      |
+|                           |
+|  [<- Prev] * o o [Next ->]|
+|                           |
++---------------------------+
+|                           |
+|  FEATURES                 |
+|  --------                 |
+|                           |
+|  Smart Scheduling         |
+|  Digital Contracts        |
+|  Real-Time Reports        |
+|  Customer Portal          |
+|  Branded Website          |
+|  Mobile Ready             |
+|                           |
++---------------------------+
+|                           |
+|  REFER A FRIEND           |
+|  ---------------          |
+|                           |
+|  Send them $25 credit!    |
+|  You get $25 too!         |
+|                           |
+|  [ Their email        ]   |
+|  [ Your email         ]   |
+|  ( ) Has cars to rent     |
+|  ( ) Looking for rental   |
+|  [ Send Free Credit -> ]  |
+|                           |
++---------------------------+
+|                           |
+|  GET STARTED FREE         |
+|  -----------------        |
+|                           |
+|  Join 500+ businesses     |
+|                           |
+|  [ Your email         ]   |
+|  [ Get Started Free ->]   |
+|                           |
+|  No credit card needed    |
+|                           |
++---------------------------+
+|  FOOTER                   |
+|  [FF] FleetFlow           |
+|  (c) 2025 FleetFlow       |
+|  Privacy * Terms          |
++---------------------------+
+```
+
+---
+
+## Marketing Strategy
+
+### Two Audiences, One Page
+
+**Left Column - Car Owners (Primary Revenue)**
+- Clear value prop: "Turn vehicles into income"
+- Emphasize FREE tier to lower barrier
+- Show pricing transparency upfront
+- Email capture for lead generation
+- Benefits focus: manage fleet, get bookings, collect payments
+
+**Right Column - Renters (Secondary, Network Effect)**
+- Search functionality to find local FleetFlow tenants
+- Drives traffic to tenant sites
+- Creates marketplace effect
+- Popular locations as quick links
+
+### Section Flow (Psychology)
+
+1. **Hero** - Immediate clarity on what FleetFlow is
+2. **Two Columns** - Self-selection: "Which am I?"
+3. **How It Works** - Reduce friction, show simplicity (3 steps)
+4. **Pricing** - Transparency builds trust, FREE tier converts
+5. **Social Proof** - Testimonials overcome objections
+6. **Features** - Details for those still researching
+7. **Referral CTA** - Viral loop, "know someone" hook
+8. **Final CTA** - Clear action for decided visitors
+
+### Referral Coupon System
+
+**Mechanics:**
+- $25 credit for referred user
+- $25 credit for referrer (when referral activates)
+- Tracks "has cars" vs "looking for rental"
+- Stored as `ReferralCredit` model
+
+---
+
+## Implementation Notes
+
+### Files Created
+- `apps/marketing/` - Django app for marketing pages
+- `apps/marketing/models.py` - LeadCapture, ReferralCredit models
+- `apps/marketing/views.py` - HomePageView, PricingView, FeaturesView, RentalSearchView
+- `apps/marketing/forms.py` - SignupLeadForm, ReferralForm, RentalSearchForm
+- `templates/marketing/` - Base template, home, search_results, pricing, features
+
+### URL Structure
+- `/` - Marketing homepage
+- `/pricing/` - Detailed pricing page
+- `/features/` - Features overview
+- `/search/` - Rental company search
+- `/api/lead/` - Lead capture endpoint (AJAX)
+- `/api/referral/` - Referral submission endpoint (AJAX)
+
+### Responsive Breakpoints
+- Desktop: > 1024px (full two-column layout)
+- Tablet: 768px - 1024px (stacked columns)
+- Mobile: < 768px (single column, simplified)

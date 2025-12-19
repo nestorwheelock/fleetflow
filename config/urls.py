@@ -51,8 +51,8 @@ urlpatterns = [
     # Public pages (tenant landing pages via subdomain)
     path('public/', include('apps.public.urls')),
 
-    # Root URL handled by dashboard or public landing depending on context
-    path('', include('apps.dashboard.urls')),
+    # Marketing pages (main domain landing page)
+    path('', include('apps.marketing.urls')),
 ]
 
 if settings.DEBUG:

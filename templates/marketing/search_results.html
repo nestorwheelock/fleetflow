@@ -1,0 +1,280 @@
+{% extends "marketing/base.html" %}
+
+{% block title %}Find Car Rentals in {{ location|default:"Your Area" }} | FleetFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    .search-hero {
+        background: var(--gray-100);
+        padding: 2rem 1rem;
+    }
+
+    .search-hero h1 {
+        font-size: 1.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .search-form-inline {
+        display: flex;
+        gap: 0.5rem;
+        max-width: 800px;
+        flex-wrap: wrap;
+    }
+
+    .search-form-inline input {
+        flex: 1;
+        min-width: 150px;
+    }
+
+    .results-section {
+        padding: 3rem 1rem;
+    }
+
+    .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .results-count {
+        color: var(--gray-600);
+    }
+
+    .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .tenant-card {
+        background: var(--white);
+        border: 1px solid var(--gray-200);
+        border-radius: 0.75rem;
+        overflow: hidden;
+        transition: box-shadow 0.2s ease;
+    }
+
+    .tenant-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .tenant-card-image {
+        height: 160px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 3rem;
+    }
+
+    .tenant-card-body {
+        padding: 1.5rem;
+    }
+
+    .tenant-card h3 {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .tenant-card h3 a {
+        color: var(--gray-900);
+    }
+
+    .tenant-card h3 a:hover {
+        color: var(--primary);
+    }
+
+    .tenant-location {
+        color: var(--gray-500);
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+    }
+
+    .tenant-stats {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .tenant-stat {
+        text-align: center;
+    }
+
+    .tenant-stat-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .tenant-stat-label {
+        font-size: 0.75rem;
+        color: var(--gray-500);
+    }
+
+    .tenant-card-footer {
+        border-top: 1px solid var(--gray-100);
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .tenant-plan {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        background: var(--gray-100);
+        color: var(--gray-600);
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--gray-500);
+    }
+
+    .no-results h2 {
+        color: var(--gray-700);
+        margin-bottom: 1rem;
+    }
+
+    .no-results p {
+        margin-bottom: 2rem;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+    }
+
+    .pagination a, .pagination span {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--gray-300);
+        border-radius: 0.25rem;
+        color: var(--gray-700);
+    }
+
+    .pagination a:hover {
+        background: var(--gray-100);
+        text-decoration: none;
+    }
+
+    .pagination .current {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    @media (max-width: 768px) {
+        .search-form-inline {
+            flex-direction: column;
+        }
+
+        .results-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Search Hero -->
+<section class="search-hero">
+    <div class="container">
+        <h1>{% if location %}Car Rentals in {{ location }}{% else %}Find Car Rentals Near You{% endif %}</h1>
+
+        <form class="search-form-inline" action="{% url 'marketing:rental-search' %}" method="get">
+            <input type="text" name="location" class="form-control" placeholder="City or ZIP code" value="{{ location }}">
+            <input type="date" name="pickup_date" class="form-control" value="{{ pickup_date }}">
+            <input type="date" name="return_date" class="form-control" value="{{ return_date }}">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+</section>
+
+<!-- Results -->
+<section class="results-section">
+    <div class="container">
+        {% if tenants %}
+        <div class="results-header">
+            <span class="results-count">{{ tenants|length }} rental {% if tenants|length == 1 %}company{% else %}companies{% endif %} found</span>
+        </div>
+
+        <div class="results-grid">
+            {% for tenant in tenants %}
+            <div class="tenant-card">
+                <div class="tenant-card-image">
+                    {% if tenant.logo %}
+                    <img src="{{ tenant.logo.url }}" alt="{{ tenant.name }}" style="max-height: 100%; max-width: 100%;">
+                    {% else %}
+                    &#128663;
+                    {% endif %}
+                </div>
+                <div class="tenant-card-body">
+                    <h3><a href="//{{ tenant.slug }}.localhost:9091/">{{ tenant.business_name|default:tenant.name }}</a></h3>
+                    <p class="tenant-location">{{ tenant.name }}</p>
+                    <div class="tenant-stats">
+                        <div class="tenant-stat">
+                            <div class="tenant-stat-value">{{ tenant.vehicle_count|default:0 }}</div>
+                            <div class="tenant-stat-label">Vehicles</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tenant-card-footer">
+                    <span class="tenant-plan">{{ tenant.get_plan_display }}</span>
+                    <a href="//{{ tenant.slug }}.localhost:9091/" class="btn btn-primary btn-sm">View Fleet</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+            <a href="?location={{ location }}&page={{ page_obj.previous_page_number }}">&laquo; Previous</a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <span class="current">{{ num }}</span>
+            {% else %}
+            <a href="?location={{ location }}&page={{ num }}">{{ num }}</a>
+            {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <a href="?location={{ location }}&page={{ page_obj.next_page_number }}">Next &raquo;</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="no-results">
+            <h2>No rental companies found</h2>
+            {% if location %}
+            <p>We couldn't find any rental companies in "{{ location }}". Try a different location or browse all available rentals.</p>
+            {% else %}
+            <p>Enter a city or ZIP code to find rental companies near you.</p>
+            {% endif %}
+            <a href="{% url 'marketing:rental-search' %}" class="btn btn-primary">Browse All Rentals</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- CTA for owners -->
+<section style="background: var(--gray-100); padding: 3rem 1rem; text-align: center;">
+    <div class="container">
+        <h2>Own a rental business?</h2>
+        <p style="color: var(--gray-600); margin-bottom: 1.5rem;">List your vehicles on FleetFlow and reach more customers.</p>
+        <a href="{% url 'marketing:home' %}" class="btn btn-primary btn-lg">Get Listed Free</a>
+    </div>
+</section>
+{% endblock %}
